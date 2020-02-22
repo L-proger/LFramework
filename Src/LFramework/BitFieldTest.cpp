@@ -1,9 +1,5 @@
-/*
- * BitFieldTest.cpp
- *
- *  Created on: 14 сент. 2017 г.
- *      Author: l-pro
- */
+#include <LFrameworkConfig.h>
+#if defined(LF_UNIT_TEST) && defined(LF_SELF_TEST)
 
 #include "UnitTest/UnitTest.h"
 #include "BitField.h"
@@ -51,5 +47,4 @@ TEST(BitField_8bit){
 	TEST_TRUE(bitfield.value == 0x00);
 }
 
-
-
+#endif
