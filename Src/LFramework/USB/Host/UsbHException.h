@@ -9,7 +9,7 @@ public:
     UsbHException(const std::string& message):_message(message){
 
     }
-    char const* what() const override {
+    char const* what()  const noexcept override  {
         return _message.data();
     }
 private:
