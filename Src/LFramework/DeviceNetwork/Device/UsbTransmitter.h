@@ -109,12 +109,12 @@ private:
 	}
 
 
-	static void onReceivedPacket_(USB::UsbTransfer * transfer, bool isOk) {
+	static void onReceivedPacket_(LFramework::USB::UsbTransfer * transfer, bool isOk) {
 		auto _this = reinterpret_cast<UsbTransmitter *>(transfer->context);
 		_this->onReceivedPacket(transfer, isOk);
 	}
 
-	static void onTramsmittedPacket_(USB::UsbTransfer * transfer, bool isOk) {
+	static void onTramsmittedPacket_(LFramework::USB::UsbTransfer * transfer, bool isOk) {
 		auto _this = reinterpret_cast<UsbTransmitter *>(transfer->context);
 		_this->onTramsmittedPacket(transfer, isOk);
 	}
