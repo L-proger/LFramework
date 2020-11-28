@@ -21,8 +21,8 @@ extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 }
 
 namespace LFramework::USB {
-USBD_HandleTypeDef UsbDevice::hUsbDevice {};
-UsbDDeviceContext* _context = nullptr;
+	__attribute__((used)) USBD_HandleTypeDef UsbDevice::hUsbDevice {} ;
+	__attribute__((used)) UsbDDeviceContext* _context = nullptr;
 
 
 volatile USB::Microsoft::CompatId::WinUSBFunction _winusbFunctionDescriptor(0);
@@ -46,7 +46,7 @@ __ALIGN_BEGIN volatile USB::Microsoft::MicrosoftStringDescriptor NDC_StringDescr
 extern volatile USB::DeviceQualifierDescriptor USBD_NDC_DeviceQualifierDesc;
 extern volatile USB::Microsoft::MicrosoftStringDescriptor NDC_StringDescriptor;
 
-std::aligned_storage_t<USBD_MAX_STR_DESC_SIZ, 4> _descriptorsBuffer;
+__attribute__((used)) std::aligned_storage_t<USBD_MAX_STR_DESC_SIZ, 4> _descriptorsBuffer;
 
 
 UsbDDeviceContext* UsbDevice::getContext(){
@@ -59,7 +59,7 @@ void hang(){
 	}
 }
 
-const USBD_DescriptorsTypeDef UsbDevice::_descriptorsTable = {
+__attribute__((used))  const USBD_DescriptorsTypeDef UsbDevice::_descriptorsTable = {
 	&UsbDevice::getDeviceDescriptor,
 	&UsbDevice::getLangidStrDescriptor,
 	&UsbDevice::getManufacturerStringDescriptor,
@@ -69,7 +69,7 @@ const USBD_DescriptorsTypeDef UsbDevice::_descriptorsTable = {
 	&UsbDevice::getInterfaceStringDescriptor
 };
 
-const USBD_ClassTypeDef UsbDevice::_usbClassBinding = {
+__attribute__((used))  const USBD_ClassTypeDef UsbDevice::_usbClassBinding = {
 	&UsbDevice::coreInit,
 	&UsbDevice::coreDeinit,
 	&UsbDevice::coreSetup,
@@ -249,7 +249,7 @@ uint8_t* UsbDevice::getDeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t* lengt
 	desc.classDescription = USB::UsbClassDescriptor(0,0,0);
 	desc.bMaxPacketSize0 = 64;
 	desc.idVendor = 0x0301;
-	desc.idProduct = 0x0000;
+	desc.idProduct = 0x1111;
 	desc.bcdDevice = USB::UsbVersion(2);
 	desc.iManufacturer = USBD_IDX_MFC_STR;
 	desc.iProduct = USBD_IDX_PRODUCT_STR;
@@ -262,7 +262,7 @@ struct USBDDummyClassData{
 	uint32_t reserved;
 };
 
-static USBDDummyClassData _classData = {};
+__attribute__((used)) static USBDDummyClassData _classData = {};
 
 void UsbDevice::start(UsbDDeviceContext* context){
 	_context = context;

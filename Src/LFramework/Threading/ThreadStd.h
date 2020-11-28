@@ -5,12 +5,12 @@
 
 #if defined(LF_THREADING) && defined(LF_THREAD_STD)
 
-#include "Thread.h"
+#include <LFramework/Threading/Thread.h>
 #include <thread>
 #include <string>
 #include <chrono>
 
-namespace LFramework {
+namespace LFramework::Threading {
 	class Thread::Impl {
 	public:
 		explicit Impl(const char* name, size_t stackSize, ThreadPriority priority, std::function<void()>&& body):_name(name){

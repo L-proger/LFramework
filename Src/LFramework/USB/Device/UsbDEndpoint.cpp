@@ -7,7 +7,7 @@
 
 namespace LFramework::USB {
 
-bool UsbDEndpoint::transferAsync(UsbDTransfer* transfer){
+bool UsbDEndpoint::transferAsync(UsbTransfer* transfer){
 	//CriticalSectionLock lock;
 
 	if(transfer == nullptr || _activeTransfer != nullptr || !isOpen()){

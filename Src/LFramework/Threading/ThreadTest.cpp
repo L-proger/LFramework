@@ -1,9 +1,9 @@
-#include "Thread.h"
+#include <LFramework/Threading/Thread.h>
 #include "../UnitTest/UnitTest.h"
 
 #ifdef LF_THREADING
 
-using namespace LFramework;
+using namespace LFramework::Threading;
 
 void test(int& counter) {
 	counter = 100500;

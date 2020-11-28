@@ -1,4 +1,12 @@
-#pragma once
+/*
+ * UnitTest.h
+ *
+ *  Created on: 26 aug. 2017 ã.
+ *      Author: l-pro
+ */
+
+#ifndef MCUFRAMEWORK_UNITTEST_UNITTEST_H_
+#define MCUFRAMEWORK_UNITTEST_UNITTEST_H_
 
 #include "../Containers/LinkedList.h"
 
@@ -69,3 +77,6 @@ namespace LFramework { namespace Testing {
 	TestResult runTest(Test* test);
 
 }}
+
+
+#endif /* MCUFRAMEWORK_UNITTEST_UNITTEST_H_ */

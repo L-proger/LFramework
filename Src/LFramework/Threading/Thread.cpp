@@ -5,15 +5,15 @@
  *      Author: l-pro
  */
 
-#include "Thread.h"
+#include <LFramework/Threading/Thread.h>
 
 #if defined(LF_THREADING)
 
-#include "ThreadFreeRTOS.h"
-#include "ThreadStd.h"
+#include <LFramework/Threading/ThreadFreeRTOS.h>
+#include <LFramework/Threading/ThreadStd.h>
 
 
-namespace LFramework {
+namespace LFramework::Threading {
 
 	Thread::Thread(const char* name, size_t stackSize, ThreadPriority priority, std::function<void()>&& func) {
 		_impl = new Thread::Impl(name, stackSize, priority, std::move(func));

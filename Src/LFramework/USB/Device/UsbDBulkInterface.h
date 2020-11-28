@@ -1,3 +1,5 @@
+#pragma once
+
 #include <LFrameworkConfig.h>
 
 #ifdef LF_USB_DEVICE

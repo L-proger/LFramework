@@ -21,6 +21,14 @@ public:
         return _interfaces[id];
     }
 
+    std::size_t getInterfaceCount() const {
+        return _interfaces.size();
+    }
+
+private:
+    HANDLE _deviceHandle;
+    WINUSB_INTERFACE_HANDLE _interfaceHandle = nullptr;
+
     void enumerateInterfaces() {
         auto result = true;
 
@@ -88,10 +96,6 @@ public:
 
 
     }
-
-private:
-    HANDLE _deviceHandle;
-    WINUSB_INTERFACE_HANDLE _interfaceHandle = nullptr;
 
 private:
     std::vector<std::shared_ptr<UsbHInterface>> _interfaces;

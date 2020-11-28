@@ -1,5 +1,9 @@
-#include <LFrameworkConfig.h>
-#if defined(LF_UNIT_TEST) && defined(LF_TERMINAL)
+/*
+ * UnitTest.cpp
+ *
+ *  Created on: 27 Aug. 2017 г.
+ *      Author: l-pro
+ */
 
 #include "UnitTest.h"
 #include "../Debug.h"
@@ -27,7 +31,6 @@ namespace LFramework { namespace Testing {
 
 }}
 
-#endif
 
 
 

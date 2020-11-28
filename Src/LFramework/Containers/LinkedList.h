@@ -1,12 +1,4 @@
-/*
- * LinkedList.h
- *
- *  Created on: 26 рту. 2017 у.
- *      Author: l-pro
- */
-
-#ifndef MCUFRAMEWORK_CONTAINERS_LINKEDLIST_H_
-#define MCUFRAMEWORK_CONTAINERS_LINKEDLIST_H_
+#pragma once
 
 #include <cstdint>
 #include <cstddef>
@@ -84,5 +76,3 @@ private:
 	LinkedListItem _head;
 };
 
-
-#endif /* MCUFRAMEWORK_CONTAINERS_LINKEDLIST_H_ */

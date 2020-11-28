@@ -4,18 +4,9 @@
 #include <usbd_core.h>
 #include <LFramework/USB/USBTypes.h>
 #include "../UsbEndpoint.h"
+#include "../UsbTransfer.h"
 
 namespace LFramework::USB {
-
-class UsbDTransfer {
-public:
-	typedef void(*TransferCompleteCallback)(UsbDTransfer*, bool);
-	void* buffer = nullptr;
-	uint32_t size = 0;
-	uint32_t actualSize = 0;
-	void* userData = nullptr;
-	TransferCompleteCallback callbackIsr = nullptr;
-};
 
 class UsbDEndpoint : public UsbEndpoint {
 public:
@@ -43,7 +34,7 @@ public:
 		_isOpen = false;
 		//finalizeTransfer(false, 0);
 	}
-	bool transferAsync(UsbDTransfer* transfer);
+	bool transferAsync(UsbTransfer* transfer);
 
 	bool isOpen() const {
 		return _isOpen;
@@ -56,13 +47,13 @@ protected:
 			auto transfer = _activeTransfer;
 			_activeTransfer = nullptr;
 			transfer->actualSize = size;
-			if(transfer->callbackIsr != nullptr){
-				transfer->callbackIsr(transfer, success);
+			if(transfer->callback != nullptr){
+				transfer->callback(transfer, success);
 			}
 		}
 	}
 private:
-	UsbDTransfer* _activeTransfer = nullptr;
+	UsbTransfer* _activeTransfer = nullptr;
 
 	bool _isOpen = false;
 };

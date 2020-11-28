@@ -10,12 +10,12 @@
 	#include "FreeRTOS.h"
 	#include "task.h"
 
-namespace LFramework {
+namespace LFramework::Threading {
 	using ThreadID = TaskHandle_t;
 }
 #else
 #include <thread>
-namespace LFramework {
+namespace LFramework::Threading {
 	using ThreadID = std::thread::id;
 }
 #endif

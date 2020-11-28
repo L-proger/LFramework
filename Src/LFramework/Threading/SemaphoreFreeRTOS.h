@@ -1,12 +1,5 @@
-/*
- * Semaphore.h
- *
- *  Created on: 19 July. 2017 ã.
- *      Author: l-pro
- */
+#pragma once
 
-#ifndef MCUFRAMEWORK_SEMAPHORE_H_
-#define MCUFRAMEWORK_SEMAPHORE_H_
 
 #include "../MCU/Mcu.h"
 #include <cassert>
@@ -18,7 +11,7 @@
 #include "semphr.h"
 
 
-namespace LFramework {
+namespace LFramework::Threading {
 
 class Semaphore {
 public:
@@ -76,5 +69,5 @@ public:
 	}
 };
 
-} //McuFramework
-#endif /* MCUFRAMEWORK_SEMAPHORE_H_ */
+}
+

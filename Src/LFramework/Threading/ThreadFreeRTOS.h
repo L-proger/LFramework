@@ -1,16 +1,16 @@
 #pragma once
 
+#include <LFramework/Threading/Thread.h>
 #include "../Detect/DetectOS.h"
-#include "Thread.h"
 
 
 #if LF_TARGET_OS == LF_OS_FREERTOS
-#include "Semaphore.h"
+#include <LFramework/Threading/SemaphoreFreeRTOS.h>
 #include "task.h"
 #endif
 
 
-namespace LFramework {
+namespace LFramework::Threading {
 
 #if LF_TARGET_OS == LF_OS_FREERTOS
 		static Thread::ID makeThreadId(TaskHandle_t handle) {
@@ -71,7 +71,7 @@ namespace LFramework {
 			}
 			TaskHandle_t _rtosTaskHandle = nullptr;
 			std::function<void()> _body;
-			BinarySemaphore _joinSemaphore;
+			Threading::BinarySemaphore _joinSemaphore;
 		};
 
 
@@ -84,6 +84,9 @@ namespace LFramework {
 		}
 		void setPriority(ThreadPriority priority) {
 			vTaskPrioritySet(xTaskGetCurrentTaskHandle(), makeOsPriority(priority));
+		}
+		void sleepForMs(size_t milliseconds){
+			vTaskDelay(milliseconds);
 		}
 	}
 #endif

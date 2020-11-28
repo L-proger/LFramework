@@ -9,9 +9,9 @@
 #include <functional>
 #include <memory>
 
-#include "ThreadPlatform.h"
+#include <LFramework/Threading/ThreadPlatform.h>
 
-namespace LFramework { 
+namespace LFramework::Threading {
 
 enum class ThreadPriority{
 	Idle,

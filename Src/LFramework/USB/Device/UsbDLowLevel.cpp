@@ -12,7 +12,7 @@
 using namespace LFramework::USB;
 
 extern "C" {
-extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+__attribute__((used)) extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 }
 
 extern "C" USBD_StatusTypeDef halToUsbdStatus(HAL_StatusTypeDef status){
@@ -64,6 +64,10 @@ USBD_StatusTypeDef  USBD_LL_CloseEP (USBD_HandleTypeDef *pdev, uint8_t ep_addr){
 
 extern "C" USBD_StatusTypeDef  USBD_LL_Start(USBD_HandleTypeDef *pdev){
 	return HAL_PCD_Start((PCD_HandleTypeDef*)pdev->pData) == HAL_OK ? USBD_OK : USBD_FAIL;
+}
+
+USBD_StatusTypeDef  USBD_LL_Stop (USBD_HandleTypeDef *pdev){
+	return HAL_PCD_Stop((PCD_HandleTypeDef*)pdev->pData) == HAL_OK ? USBD_OK : USBD_FAIL;
 }
 
 extern "C" USBD_StatusTypeDef  USBD_LL_StallEP (USBD_HandleTypeDef *pdev, uint8_t ep_addr){
@@ -170,6 +174,10 @@ extern "C" USBD_StatusTypeDef USBD_LL_Init (USBD_HandleTypeDef* pdev){
 	  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 1, 0x80);
 
 	  return USBD_OK;
+}
+
+extern "C"  USBD_StatusTypeDef  USBD_LL_DeInit (USBD_HandleTypeDef *pdev){
+	return HAL_PCD_DeInit((PCD_HandleTypeDef*)pdev->pData) == HAL_OK ? USBD_OK : USBD_FAIL;
 }
 
 #endif

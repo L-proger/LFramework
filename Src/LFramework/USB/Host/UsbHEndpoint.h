@@ -4,6 +4,8 @@
 #include <Windows.h>
 #include "UsbHException.h"
 #include <winusb.h>
+#include <memory>
+
 namespace LFramework::USB {
 
 class Future {

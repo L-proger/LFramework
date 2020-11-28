@@ -4,12 +4,12 @@
 #include <string>
 #include <Windows.h>
 
-class UsbHException : std::exception{
+class UsbHException : public std::exception{
 public:
     UsbHException(const std::string& message):_message(message){
 
     }
-    char const* what()  const noexcept override  {
+    char const* what() const override {
         return _message.data();
     }
 private:
