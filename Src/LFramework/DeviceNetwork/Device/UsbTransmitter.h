@@ -1,17 +1,17 @@
 #pragma once
 
 #include <LFramework/USB/Device/UsbDBulkInterface.h>
-#include "../NetworkInterface.h"
+#include <MicroNetwork/Common/DataStream.h>
 #include <LFramework/Threading/CriticalSection.h>
 #include <atomic>
 
-namespace LFramework::DeviceNetwork::Device {
+namespace MicroNetwork::Device {
 
-class UsbTransmitter : public IDataStream {
+class UsbTransmitter : public Common::DataStream {
 public:
 	static constexpr std::size_t MaxPacketSize = 64;
 
-	UsbTransmitter(USB::UsbDBulkInterface* usbInterface) : _usbInterface(usbInterface) {
+    UsbTransmitter(LFramework::USB::UsbDBulkInterface* usbInterface) : _usbInterface(usbInterface) {
 		_rxTransfer.buffer = _rxBuffer;
 		_rxTransfer.size = MaxPacketSize;
 		_rxTransfer.callback = &onReceivedPacket_;
@@ -23,21 +23,21 @@ public:
 	}
 
 	bool start() override {
-		_rxEndpoint = reinterpret_cast<USB::UsbDEndpoint*>(_usbInterface->getEndpoint(false, 0));
-		_txEndpoint = reinterpret_cast<USB::UsbDEndpoint*>(_usbInterface->getEndpoint(true, 0));
+        _rxEndpoint = reinterpret_cast<LFramework::USB::UsbDEndpoint*>(_usbInterface->getEndpoint(false, 0));
+        _txEndpoint = reinterpret_cast<LFramework::USB::UsbDEndpoint*>(_usbInterface->getEndpoint(true, 0));
 		return (_rxEndpoint != nullptr) && (_txEndpoint != nullptr) && startRxTransfer();
 	}
 
 protected:
 	  void onRemoteDataAvailable() override {
-		  Threading::CriticalSection lock;
+          LFramework::Threading::CriticalSection lock;
 		  if(!_isTransmitting){
 			  startTxTransfer();
 		  }
 
 	  }
 	  void onReadBytes() override {
-		  Threading::CriticalSection lock;
+          LFramework::Threading::CriticalSection lock;
 		  if(freeSpace() >= MaxPacketSize){
 			  startRxTransfer();
 		  }
@@ -47,7 +47,7 @@ protected:
 	  }
 private:
 
-	void onReceivedPacket(USB::UsbTransfer * transfer, bool isOk) {
+    void onReceivedPacket(LFramework::USB::UsbTransfer * transfer, bool isOk) {
 		//lfDebug() << "USB rx";
 		if(transfer->actualSize == 0) {
 			reset();
@@ -73,7 +73,7 @@ private:
 	}
 
 	bool startTxTransfer() {
-			Threading::CriticalSection lock;
+            LFramework::Threading::CriticalSection lock;
 
 
 			auto txSize = _remote->read(_txBuffer, sizeof(_txBuffer));
@@ -92,9 +92,9 @@ private:
 		}
 
 
-	void onTramsmittedPacket(USB::UsbTransfer* transfer, bool isOk) {
+    void onTramsmittedPacket(LFramework::USB::UsbTransfer* transfer, bool isOk) {
 		//lfDebug() << "USB tx";
-		Threading::CriticalSection lock;
+        LFramework::Threading::CriticalSection lock;
 		if(!_synchronized) {
 			_synchronized = sendSyncPacket();
 		} else {
@@ -125,13 +125,13 @@ private:
 	uint8_t _rxBuffer[MaxPacketSize];
 	uint8_t _txBuffer[MaxPacketSize];
 
-	USB::UsbTransfer _rxTransfer;
-	USB::UsbTransfer _txTransfer;
+    LFramework::USB::UsbTransfer _rxTransfer;
+    LFramework::USB::UsbTransfer _txTransfer;
 
-	USB::UsbDEndpoint* _rxEndpoint = nullptr;
-	USB::UsbDEndpoint* _txEndpoint = nullptr;
+    LFramework::USB::UsbDEndpoint* _rxEndpoint = nullptr;
+    LFramework::USB::UsbDEndpoint* _txEndpoint = nullptr;
 
-	USB::UsbDBulkInterface* _usbInterface = nullptr;
+    LFramework::USB::UsbDBulkInterface* _usbInterface = nullptr;
 };
 
 }

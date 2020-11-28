@@ -1,15 +1,11 @@
 #pragma once
 
-#include "Packet.h"
-#include "NetworkInterface.h"
+#include <MicroNetwork/Common/Packet.h>
+#include <MicroNetwork/Common/DataStream.h>
 #include <LFramework/Debug.h>
 #include <LFramework/Assert.h>
-#include <LFramework/DeviceNetwork/Node.h>
-#include <LFramework/DeviceNetwork/Router.h>
-#include <LFramework/DeviceNetwork/Packet.h>
 #include <LFramework/DeviceNetwork/TaskManager.h>
 #include <LFramework/Containers/ByteFifo.h>
-#include <LFramework/DeviceNetwork/NetworkInterface.h>
 #include <LFramework/Threading/CriticalSection.h>
 #include <LFramework/Threading/Semaphore.h>
 #include <LFramework/Threading/Thread.h>
@@ -17,17 +13,17 @@
 #include "TaskManager.h"
 #include <atomic>
 
-namespace LFramework::DeviceNetwork {
+namespace MicroNetwork::Device {
 
-class Node : public IDataStream {
+class Node : public Common::DataStream {
 public:
-	class TaskContext : public ITaskContext {
+    class TaskContext : public ITaskContext {
 	public:
 		TaskContext(Node* node):_node(node){
 
 		}
-		bool receivePacketFromNetwork(const PacketHeader& header, const void* data){
-			Threading::CriticalSection lock;
+        bool receivePacketFromNetwork(const Common::PacketHeader& header, const void* data){
+            LFramework::Threading::CriticalSection lock;
 			if(_rxBuffer.sizeAvailable() < header.fullSize()){
 				return false;
 			}
@@ -36,13 +32,13 @@ public:
 			return true;
 		}
 
-		bool packet(PacketHeader header, const void* data) override {
+        bool packet(Common::PacketHeader header, const void* data) override {
 			return _node->writePacket(header, data);
 		}
 
 		void readPackets() override {
 			while(true){
-				Threading::CriticalSection lock;
+                LFramework::Threading::CriticalSection lock;
 				if(!readPacket()){
 					break;
 				}else{
@@ -53,7 +49,7 @@ public:
 
 		void processTask(Task* task) {
 			{
-				Threading::CriticalSection lock;
+                LFramework::Threading::CriticalSection lock;
 				_rxBuffer.clear();
 				_exitRequested = false;
 				_currentTask = task;
@@ -63,7 +59,7 @@ public:
 
 		void requestExit() {
 			{
-				Threading::CriticalSection lock;
+                LFramework::Threading::CriticalSection lock;
 				_exitRequested = true;
 				auto task = _currentTask.load();
 				if(task != nullptr){
@@ -89,7 +85,7 @@ public:
 		std::atomic<Task*> _currentTask = nullptr;
 		bool _exitRequested = false;
 		Node* _node;
-		MaxPacket _packet;
+        Common::MaxPacket _packet;
 		ByteFifo<1024> _rxBuffer;
 	};
 
@@ -105,7 +101,7 @@ public:
     void process() {
         while(true){
         	//handle bind
-        	auto v = Threading::CriticalSection::lock();
+            auto v = LFramework::Threading::CriticalSection::lock();
         	_taskTxEnabled = true;
         	if(_bindRequested){
         		lfDebug() << "Bind request detected";
@@ -113,27 +109,27 @@ public:
 				_stopRequested = false;
 				_taskTxEnabled = true;
 
-                _txPacket.header.id = PacketId::Bind;
+                _txPacket.header.id = Common::PacketId::Bind;
         		_bindRequested = false;
-        		Threading::CriticalSection::unlock(v);
+                LFramework::Threading::CriticalSection::unlock(v);
         		writePacketBlocking();
         		lfDebug() << "Bind response sent";
 
         	}else{
-        		Threading::CriticalSection::unlock(v);
+                LFramework::Threading::CriticalSection::unlock(v);
         	}
 
         	if(_startRequested && !_bindRequested){
         		_startRequested = false;
         		processTask();
         	}else{
-        		Threading::ThisThread::sleepForMs(1);
+                LFramework::Threading::ThisThread::sleepForMs(1);
         	}
 
         }
     }
 
-    bool readPacket(MaxPacket& packet) {
+    bool readPacket(Common::MaxPacket& packet) {
     	LFramework::Threading::CriticalSection lock;
 		if(_remote == nullptr){
 			return false;
@@ -155,11 +151,11 @@ public:
 
     void writePacketBlocking() {
     	while(!writePacket(_txPacket.header, _txPacket.payload.data()) && _taskTxEnabled){
-    		Threading::ThisThread::sleepForMs(1);
+            LFramework::Threading::ThisThread::sleepForMs(1);
     	}
     }
 
-    bool writePacket(PacketHeader header, const void* data) {
+    bool writePacket(Common::PacketHeader header, const void* data) {
     	auto totalSize = sizeof(header) + header.size;
     	LFramework::Threading::CriticalSection lock;
 
@@ -182,13 +178,13 @@ protected:
     	lfDebug() << "Creating task";
     	auto task = _taskManager->createTask();
     	lfDebug() << "Sending task start";
-        _txPacket.header.id = PacketId::TaskStart;
+        _txPacket.header.id = Common::PacketId::TaskStart;
     	writePacketBlocking();
     	lfDebug() << "Running task";
     	_taskContext->processTask(task);
     	lfDebug() << "Deleting task";
     	_taskManager->deleteTask(task);
-        _txPacket.header.id = PacketId::TaskStop;
+        _txPacket.header.id = Common::PacketId::TaskStop;
     	writePacketBlocking();
     	lfDebug() << "Task stopped";
     }
@@ -204,12 +200,12 @@ protected:
     		}
 
     		lfDebug() << "Received packet!";
-			if(_rxPacket.header.id == PacketId::TaskStop){
+            if(_rxPacket.header.id == Common::PacketId::TaskStop){
 				_remote->discard(_rxPacket.header.fullSize());
 				lfDebug() << "Stop task requested";
 				_stopRequested = true;
 
-			}else if(_rxPacket.header.id == PacketId::TaskStart){
+            }else if(_rxPacket.header.id == Common::PacketId::TaskStart){
 				_remote->discard(_rxPacket.header.fullSize());
 				lfDebug() << "Start task requested";
 				_startRequested = true;
@@ -227,7 +223,7 @@ protected:
     }
     void onRemoteReset() override {
     	lfDebug() << "Reset node";
-    	Threading::CriticalSection lock;
+        LFramework::Threading::CriticalSection lock;
     	_taskContext->requestExit();
     	_taskTxEnabled = false;
     	_bindRequested = true;
@@ -235,8 +231,8 @@ protected:
     }
 private:
     TaskContext* _taskContext = nullptr;
-    MaxPacket _rxPacket;
-    MaxPacket _txPacket;
+    Common::MaxPacket _rxPacket;
+    Common::MaxPacket _txPacket;
     TaskManager* _taskManager = nullptr;
     std::atomic<bool> _stopRequested = false;
     std::atomic<bool> _startRequested = false;

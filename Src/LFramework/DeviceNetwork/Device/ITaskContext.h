@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../IDataReceiver.h"
+#include <MicroNetwork/Common/IDataReceiver.h>
 
-namespace LFramework::DeviceNetwork {
+namespace MicroNetwork::Device {
 
-	class ITaskContext : public IDataReceiver {
+    class ITaskContext : public Common::IDataReceiver {
 	public:
 		virtual ~ITaskContext() = default;
 		virtual void readPackets() = 0;

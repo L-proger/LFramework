@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Packet.h"
+#include <MicroNetwork/Common/Packet.h>
 #include "Device/ITaskContext.h"
-#include "IDataReceiver.h"
+#include <MicroNetwork/Common/IDataReceiver.h>
 
-namespace LFramework::DeviceNetwork {
+namespace MicroNetwork::Device {
 
-	class Task : public IDataReceiver {
+    class Task : public Common::IDataReceiver {
 	public:
 		virtual ~Task() = default;
 		virtual void run(ITaskContext* context) = 0;
