@@ -16,7 +16,7 @@
 
 namespace LFramework {
 
-using InterfaceID = std::uint64_t;
+using InterfaceID = Guid;
 
 //IUnknown
 class IUnknown;
@@ -122,7 +122,7 @@ template<>
 struct InterfaceAbi<IUnknown> {
 public:
     using Base = void;
-    static constexpr InterfaceID ID() { return 0; }
+    static constexpr InterfaceID ID() { return { 0x00000000, 0x0000, 0x0000, {0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46} }; }
     template<class TInterface>
     friend class ComPtr;
     friend class ComObject;
@@ -216,7 +216,9 @@ public:
     ComPtr() = default;
 
     ComPtr(InterfacePtr ptr) : _interface(ptr){
-        _interface->addRef();
+        if(_interface != nullptr){
+            _interface->addRef();
+        }
     }
 
     template<class U, class = std::enable_if_t<std::is_base_of_v<InterfaceAbi<TInterface>, InterfaceAbi<U>>>>
@@ -224,10 +226,16 @@ public:
         _interface->addRef();
     }
 
-    template<class TInterface_>
-    ComPtr<TInterface_> queryInterface(){
-        ComPtr<TInterface_> result;
-        if(_interface->queryInterface(InterfaceAbi<TInterface>::ID(), result.put()) == Result::Ok){
+    ComPtr(const ComPtr& ptr) : _interface(ptr._interface) {
+        if(_interface != nullptr){
+            _interface->addRef();
+        }
+    }
+
+    template<class U>
+    ComPtr<U> queryInterface(){
+        ComPtr<U> result;
+        if(_interface->queryInterface(InterfaceAbi<U>::ID(), result.put()) == Result::Ok){
             return result;
         }
         return {};
