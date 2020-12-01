@@ -89,7 +89,7 @@ struct IsAllInterfaces : std::conjunction<IsInterface<T>...> {};
 
 template<class TImplementer, class TBase, class ... TInterfaceList>
 struct ComImplement : public TBase {
-    using ComImplement_BaseType = ComImplement;
+    using ComImplement_BaseType = TBase;
     using ComImplement_SelfType = ComImplement;
     using Implementer = TImplementer;
     ComRemapList<TImplementer, TInterfaceList...> _remaps = { reinterpret_cast<TImplementer*>(this) };
