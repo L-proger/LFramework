@@ -89,6 +89,7 @@ struct IsAllInterfaces : std::conjunction<IsInterface<T>...> {};
 
 template<class TImplementer, class TBase, class ... TInterfaceList>
 struct ComImplement : public TBase {
+    using ComImplement_BaseType = ComImplement;
     using ComImplement_SelfType = ComImplement;
     using Implementer = TImplementer;
     ComRemapList<TImplementer, TInterfaceList...> _remaps = { reinterpret_cast<TImplementer*>(this) };
@@ -102,6 +103,10 @@ struct IsComImplement<T, std::void_t<typename T::ComImplement_SelfType>> : std::
 
 template<class...T>
 struct IsAllComImplement : std::conjunction<IsComImplement<T>...> {};
+
+template<class TInterface, class ... TInterfaceList>
+struct HasInterface : std::disjunction<std::is_base_of<InterfaceAbi<TInterface>, InterfaceAbi<TInterfaceList>>...> {};
+
 
 
 enum class Result : uint32_t {
@@ -139,6 +144,30 @@ struct InterfaceRemap<IUnknown, TImplementer> {
     virtual std::uint32_t LFRAMEWORK_COM_CALL release() { return _implementer->release(); }
     TImplementer* _implementer;
 };
+
+template <class TInterface, class TComImplement>
+struct IsComImplementSupportsInterface : std::false_type {};
+
+template <class TInterface, class TImplementer, class TBase, class ... TInterfaceList>
+struct IsComImplementSupportsInterface<TInterface, ComImplement<TImplementer, TBase, TInterfaceList...>> : HasInterface<TInterface, TInterfaceList...> {};
+
+template<class TImplementer, class TInterface>
+constexpr bool IsInterfaceSupported() {
+    if constexpr(!LFramework::IsInterface<TInterface>::value || !IsComImplement<TImplementer>::value){
+        return false;
+    }else{
+        if constexpr(std::is_same_v<TImplementer, ComObject> && std::is_same_v<TInterface, LFramework::IUnknown>){
+            return true;
+        }else{
+            if constexpr (LFramework::IsComImplementSupportsInterface<TInterface, typename TImplementer::ComImplement_SelfType>::value){
+                return true;
+            }else{
+                return IsInterfaceSupported<typename TImplementer::ComImplement_BaseType, TInterface>();
+            }
+        }
+    }
+}
+
 
 class ComObject  {
 public:
@@ -208,6 +237,10 @@ private:
 };
 
 
+
+
+
+
 template<class TInterface>
 class ComPtr {
 public:
@@ -252,6 +285,11 @@ public:
     template<class U, class = std::enable_if_t<std::is_base_of_v<InterfaceAbi<TInterface>, InterfaceAbi<U>>>>
     operator ComPtr<U>(){
         return ComPtr<U>(_interface);
+    }
+
+    ComPtr operator = (std::nullptr_t) {
+        reset();
+        return *this;
     }
 
     bool operator == (const ComPtr& other) const {
@@ -304,6 +342,18 @@ public:
         if (ptr != nullptr) {
             _interface = nullptr;
             ptr->release();
+        }
+    }
+
+    template<class TImplementer, class ... TArgs>
+    static ComPtr create(TArgs&& ... args) {
+        if constexpr(IsInterfaceSupported<TImplementer, TInterface>()){
+            auto obj = new TImplementer(std::forward<TArgs>(args)...);
+            ComPtr result;
+            result.attach(obj->template queryInterface<TInterface>());
+            return result;
+        }else{
+            static_assert(IsInterfaceSupported<TImplementer, TInterface>(), "Intarfece not supported");
         }
     }
 private:
