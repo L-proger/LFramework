@@ -151,22 +151,6 @@ struct IsComImplementSupportsInterface : std::false_type {};
 template <class TInterface, class TImplementer, class TBase, class ... TInterfaceList>
 struct IsComImplementSupportsInterface<TInterface, ComImplement<TImplementer, TBase, TInterfaceList...>> : HasInterface<TInterface, TInterfaceList...> {};
 
-template<class TImplementer, class TInterface>
-constexpr bool IsInterfaceSupported() {
-    if constexpr(!LFramework::IsInterface<TInterface>::value || !IsComImplement<TImplementer>::value){
-        return false;
-    }else{
-        if constexpr(std::is_same_v<TImplementer, ComObject> && std::is_same_v<TInterface, LFramework::IUnknown>){
-            return true;
-        }else{
-            if constexpr (LFramework::IsComImplementSupportsInterface<TInterface, typename TImplementer::ComImplement_SelfType>::value){
-                return true;
-            }else{
-                return IsInterfaceSupported<typename TImplementer::ComImplement_BaseType, TInterface>();
-            }
-        }
-    }
-}
 
 
 class ComObject  {
@@ -237,6 +221,22 @@ private:
 };
 
 
+template<class TImplementer, class TInterface>
+constexpr bool IsInterfaceSupported() {
+    if constexpr(!LFramework::IsInterface<TInterface>::value || !IsComImplement<TImplementer>::value){
+        return false;
+    }else{
+        if constexpr(std::is_same_v<TImplementer, ComObject> && std::is_same_v<TInterface, LFramework::IUnknown>){
+            return true;
+        }else{
+            if constexpr (LFramework::IsComImplementSupportsInterface<TInterface, typename TImplementer::ComImplement_SelfType>::value){
+                return true;
+            }else{
+                return IsInterfaceSupported<typename TImplementer::ComImplement_BaseType, TInterface>();
+            }
+        }
+    }
+}
 
 
 
