@@ -315,6 +315,17 @@ public:
         return *this;
     }
 
+    ComPtr operator = (const ComPtr& other) {
+        reset();
+        auto ptr = other._interface;
+        if (ptr != nullptr) {
+            ptr->addRef();
+        }
+        _interface = ptr;
+        return *this;
+    }
+
+
     bool operator == (const ComPtr& other) const {
         return _interface == other._interface;
     }
