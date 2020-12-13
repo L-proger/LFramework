@@ -38,6 +38,9 @@ struct RemapTraits<InterfaceRemap<TInterface, TImplementer>> {
 template<class Interface>
 struct InterfaceAbi {};
 
+
+
+
 template<class InterfaceAbi>
 bool InterfaceAbiInterfaceSupported(const InterfaceID& id) {
     if (InterfaceAbi::ID() == id) {
@@ -95,6 +98,7 @@ struct ComImplement : public TBase {
     ComRemapList<TImplementer, TInterfaceList...> _remaps = { reinterpret_cast<TImplementer*>(this) };
 };
 
+
 template<class T, class = void>
 struct IsComImplement : std::false_type {};
 
@@ -107,6 +111,15 @@ struct IsAllComImplement : std::conjunction<IsComImplement<T>...> {};
 template<class TInterface, class ... TInterfaceList>
 struct HasInterface : std::disjunction<std::is_base_of<InterfaceAbi<TInterface>, InterfaceAbi<TInterfaceList>>...> {};
 
+template<class TImplementer, class TInterface>
+class ComDelegate;
+
+
+template<class T>
+struct IsComDelegate : std::false_type {};
+
+template<class TImplementer, class TInterface>
+struct IsComDelegate<ComDelegate<TImplementer, TInterface>> : std::true_type {};
 
 
 enum class Result : uint32_t {
@@ -142,6 +155,13 @@ struct InterfaceRemap<IUnknown, TImplementer> {
     virtual Result LFRAMEWORK_COM_CALL queryInterface(const InterfaceID& riid, void** ppvObject) { return _implementer->queryInterface(riid, ppvObject); }
     virtual std::uint32_t LFRAMEWORK_COM_CALL addRef() { return _implementer->addRef(); }
     virtual std::uint32_t LFRAMEWORK_COM_CALL release() { return _implementer->release(); }
+    inline auto implementer() {
+        if constexpr (IsComDelegate<TImplementer>::value) {
+            return _implementer->getImplementer();
+        } else {
+            return _implementer;
+        }
+    }
     TImplementer* _implementer;
 };
 
@@ -151,9 +171,24 @@ struct IsComImplementSupportsInterface : std::false_type {};
 template <class TInterface, class TImplementer, class TBase, class ... TInterfaceList>
 struct IsComImplementSupportsInterface<TInterface, ComImplement<TImplementer, TBase, TInterfaceList...>> : HasInterface<TInterface, TInterfaceList...> {};
 
+class RefCountedObject {
+public:
+    virtual ~RefCountedObject() = default;
+    std::uint32_t addRef() {
+        return _refCount.fetch_add(1) + 1;
+    }
+    std::uint32_t release() {
+        auto result = _refCount.fetch_sub(1);
+        if (result == 1) {
+            delete this;
+        }
+        return result - 1;
+    }
+private:
+    std::atomic<unsigned long> _refCount{};
+};
 
-
-class ComObject  {
+class ComObject : public RefCountedObject {
 public:
     template<typename TRemap>
     friend struct RemapChainItem;
@@ -161,8 +196,6 @@ public:
     ComObject() {
         _headRemap.next = &_headRemap;
     }
-
-    virtual ~ComObject() = default;
 
     template<typename TInterface>
     InterfaceAbi<TInterface>* queryInterface() {
@@ -188,16 +221,7 @@ public:
             return Result::Ok;
         }
     }
-    std::uint32_t addRef() {
-        return _refCount.fetch_add(1) + 1;
-    }
-    std::uint32_t release() {
-        auto result = _refCount.fetch_sub(1);
-        if (result == 1) {
-            delete this;
-        }
-        return result - 1;
-    }
+   
 private:
     void findInterface(const InterfaceID& id, void** result) {
         RemapChainItemBase* current = &_headRemap;
@@ -217,7 +241,6 @@ private:
     }
 
     RemapChainItem<InterfaceRemap<IUnknown, ComObject>> _headRemap{ this };
-    std::atomic<unsigned long> _refCount{};
 };
 
 
@@ -359,6 +382,41 @@ public:
 private:
     InterfacePtr _interface = nullptr;
 };
+
+
+template<class TImplementer, class TInterface>
+class ComDelegate : public ComImplement<ComDelegate<TImplementer, TInterface>, ComObject, TInterface> {
+public:
+    using DelegatedImplementer = TImplementer;
+    typedef void (TImplementer::*DelegateDestroyCallback)();
+
+    ComDelegate(TImplementer* implementer, DelegateDestroyCallback destroyCallback)
+        : _implementer(implementer), _destroyCallback(destroyCallback) {
+        if constexpr (std::is_base_of_v<RefCountedObject, TImplementer>) {
+            _implementer->addRef();
+        }
+    }
+    ~ComDelegate() {
+        if (_destroyCallback != nullptr) {
+            ((_implementer)->*(_destroyCallback))();
+        }
+        if constexpr (std::is_base_of_v<RefCountedObject, TImplementer>) {
+            _implementer->release();
+        }
+    }
+    TImplementer* getImplementer() {
+        return _implementer;
+    }
+private:
+    DelegateDestroyCallback _destroyCallback;
+    TImplementer* _implementer;
+};
+
+
+template<class TInterface, class TImplementer>
+ComPtr<TInterface> makeComDelegate(TImplementer* implementer, typename ComDelegate<TImplementer, TInterface>::DelegateDestroyCallback delegateDestroyCallback = nullptr) {
+    return ComPtr<TInterface>::create<ComDelegate<TImplementer, TInterface>>(implementer, delegateDestroyCallback);
+}
 
 
 }
