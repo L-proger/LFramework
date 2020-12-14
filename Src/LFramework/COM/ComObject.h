@@ -148,6 +148,7 @@ private:
     virtual Result LFRAMEWORK_COM_CALL queryInterface(const InterfaceID& riid, void** ppvObject) = 0;
     virtual std::uint32_t LFRAMEWORK_COM_CALL addRef() = 0;
     virtual std::uint32_t LFRAMEWORK_COM_CALL release() = 0;
+    ~InterfaceAbi() = delete;
 };
 
 template<class TImplementer>
@@ -163,6 +164,7 @@ struct InterfaceRemap<IUnknown, TImplementer> {
         }
     }
     TImplementer* _implementer;
+    ~InterfaceRemap() = default;
 };
 
 template <class TInterface, class TComImplement>
@@ -188,6 +190,10 @@ private:
     std::atomic<unsigned long> _refCount{};
 };
 
+template<class TInterface>
+class ComPtr;
+
+
 class ComObject : public RefCountedObject {
 public:
     template<typename TRemap>
@@ -198,10 +204,13 @@ public:
     }
 
     template<typename TInterface>
-    InterfaceAbi<TInterface>* queryInterface() {
+    ComPtr<TInterface> queryInterface() {
         void* result = nullptr;
         if(queryInterface(InterfaceAbi<TInterface>::ID(), &result) == Result::Ok){
-            return reinterpret_cast<InterfaceAbi<TInterface>*>(result);
+            auto abiPtr = reinterpret_cast<InterfaceAbi<TInterface>*>(result);
+            ComPtr<TInterface> result;
+            result.attach(abiPtr);
+            return result;
         }
         return nullptr;
     }
@@ -383,11 +392,9 @@ public:
     static ComPtr create(TArgs&& ... args) {
         if constexpr(IsInterfaceSupported<TImplementer, TInterface>()){
             auto obj = new TImplementer(std::forward<TArgs>(args)...);
-            ComPtr result;
-            result.attach(obj->template queryInterface<TInterface>());
-            return result;
+            return obj->template queryInterface<TInterface>();
         }else{
-            static_assert(IsInterfaceSupported<TImplementer, TInterface>(), "Intarfece not supported");
+            static_assert(IsInterfaceSupported<TImplementer, TInterface>(), "Interface not supported");
         }
     }
 private:
@@ -426,7 +433,7 @@ private:
 
 template<class TInterface, class TImplementer>
 ComPtr<TInterface> makeComDelegate(TImplementer* implementer, typename ComDelegate<TImplementer, TInterface>::DelegateDestroyCallback delegateDestroyCallback = nullptr) {
-    return ComPtr<TInterface>::create<ComDelegate<TImplementer, TInterface>>(implementer, delegateDestroyCallback);
+    return ComPtr<TInterface>::template create<ComDelegate<TImplementer, TInterface>>(implementer, delegateDestroyCallback);
 }
 
 

@@ -1,4 +1,9 @@
 #ifndef _WIN32
+
+
+#include <LFramework/Debug.h>
+#include <LFramework/IO/StreamWriter.h>
+
 extern "C" {
 	void HardFaultHandlerExtended(unsigned int * hardfault_args){
 		unsigned int stacked_r0;
@@ -19,6 +24,13 @@ extern "C" {
 		stacked_lr = ((unsigned int)hardfault_args[5]);
 		stacked_pc = ((unsigned int)hardfault_args[6]);
 		stacked_psr = ((unsigned int)hardfault_args[7]);
+
+		lfFatal() << "----------";
+		lfFatal() << "Hard fault";
+		lfFatal() << "----------";
+
+		lfFatal() << "stacked_lr: 0x" << LFramework::HexFormat(stacked_lr) ;
+		lfFatal() << "stacked_pc: 0x" << LFramework::HexFormat(stacked_pc) ;
 
 		while(true){
 			asm("nop");
