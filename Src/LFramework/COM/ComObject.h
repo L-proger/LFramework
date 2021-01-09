@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <type_traits>
 #include <atomic>
+#include <string>
 
 #if (LF_TARGET_OS == LF_OS_WINDOWS) || (LF_TARGET_OS == LF_OS_CYGWIN)
 #define LFRAMEWORK_COM_CALL __stdcall
@@ -134,6 +135,33 @@ enum class Result : uint32_t {
     AsyncOperationNotStarted = 0x80000019L,
     RpcTimeout = 0x8001011FL,
     RpcDisconnected = 0x80010108L
+};
+
+struct ComException : std::exception {
+   ComException(Result code) : _errorCode(code) {
+
+   }
+   ComException() : ComException(Result::UnknownFailure) {
+
+   }
+   ComException(Result code, std::string message) :_errorCode(code), _message(std::move(message)) {
+
+   }
+   ComException(std::string message) : ComException(Result::UnknownFailure, std::move(message)) {
+
+   }
+   Result code() const {
+       return _errorCode;
+   }
+   char const* what() const override {
+       return _message.c_str();
+   }
+   const std::string& message() const {
+       return _message;
+   }
+private:
+   Result _errorCode;
+   std::string _message;
 };
 
 template<>
@@ -271,12 +299,25 @@ constexpr bool IsInterfaceSupported() {
 }
 
 
+template<class TInterface>
+class InterfaceWrapper {
+public:
+    using NotSpecialized = bool;
+};
 
+
+template<class TInterface, class = void>
+class HasInterfaceWrapper : public std::true_type {};
+
+template<class TInterface>
+class HasInterfaceWrapper<TInterface, std::void_t<typename InterfaceWrapper<TInterface>::NotSpecialized>> : public std::false_type {};
 
 template<class TInterface>
 class ComPtr {
 public:
     using InterfacePtr = InterfaceAbi<TInterface>*;
+
+    using PublicInterfacePtr = std::conditional_t<HasInterfaceWrapper<TInterface>::value, InterfaceWrapper<TInterface>*, InterfacePtr>;
 
     ComPtr() = default;
 
@@ -310,8 +351,13 @@ public:
         reset();
     }
 
-    InterfacePtr operator ->() {
-        return _interface;
+    PublicInterfacePtr operator ->() {
+        if constexpr(HasInterfaceWrapper<TInterface>::value){
+            return reinterpret_cast<PublicInterfacePtr>(&_interface);
+        }else{
+            return reinterpret_cast<InterfacePtr>(_interface);
+        }
+
     }
 
     template<class U, class = std::enable_if_t<std::is_base_of_v<InterfaceAbi<TInterface>, InterfaceAbi<U>>>>
