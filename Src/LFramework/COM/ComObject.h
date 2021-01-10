@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <atomic>
 #include <string>
+#include <vector>
 
 #if (LF_TARGET_OS == LF_OS_WINDOWS) || (LF_TARGET_OS == LF_OS_CYGWIN)
 #define LFRAMEWORK_COM_CALL __stdcall
@@ -481,6 +482,85 @@ template<class TInterface, class TImplementer>
 ComPtr<TInterface> makeComDelegate(TImplementer* implementer, typename ComDelegate<TImplementer, TInterface>::DelegateDestroyCallback delegateDestroyCallback = nullptr) {
     return ComPtr<TInterface>::template create<ComDelegate<TImplementer, TInterface>>(implementer, delegateDestroyCallback);
 }
+
+
+class ArrayOutMarshaler {
+public:
+    using SizeType = std::uint32_t;
+    typedef void* ContextPtr;
+    typedef void* (LFRAMEWORK_COM_CALL *ContainerResizeCallback)(ContextPtr context, SizeType size);
+
+    ContextPtr context;
+    ContainerResizeCallback callback;
+
+    template<typename T>
+    ArrayOutMarshaler(std::vector<T>& buffer) {
+        context = &buffer;
+        callback = &ArrayOutMarshaler::resizeCallback<T>;
+    }
+
+    ArrayOutMarshaler(std::string& buffer) {
+        context = &buffer;
+        callback = &ArrayOutMarshaler::resizeCallback;
+    }
+    template<typename T>
+    void operator = (const std::vector<T>& source) {
+        void* data = callback(context, static_cast<SizeType>(source.size()));
+        if (data != nullptr && !source.empty()) {
+            memcpy(data, source.data(), sizeof(T) * source.size());
+        }
+    }
+    void operator = (const std::string& source) {
+        void* data = callback(context, static_cast<SizeType>(source.size()));
+        if (data != nullptr && !source.empty()) {
+            memcpy(data, source.data(), source.size());
+        }
+    }
+private:
+    template<typename T>
+    static void* LFRAMEWORK_COM_CALL resizeCallback(ContextPtr context, SizeType size) {
+        auto container = reinterpret_cast<std::vector<T>*>(context);
+        container->resize(size);
+        return size == 0 ? nullptr : container->data();
+    }
+    static void* LFRAMEWORK_COM_CALL resizeCallback(ContextPtr context, SizeType size) {
+        auto container = reinterpret_cast<std::string*>(context);
+        container->resize(size);
+        return size == 0 ? nullptr : container->data();
+    }
+    ArrayOutMarshaler() = delete;
+};
+
+class ArrayInMarshaler {
+public:
+    using SizeType = std::uint32_t;
+    const void* data;
+    SizeType itemsCount;
+
+    ArrayInMarshaler(const std::string& source) {
+        data = source.data();
+        itemsCount = static_cast<SizeType>(source.size());
+    }
+    template<typename T>
+    ArrayInMarshaler(const std::vector<T>& source) {
+        data = source.data();
+        itemsCount = static_cast<SizeType>(source.size());
+    }
+    operator std::string() const {
+        return std::string(reinterpret_cast<const char*>(data), itemsCount);
+    }
+    template<typename T>
+    operator std::vector<T>() const {
+        std::vector<T> result;
+        if (itemsCount != 0) {
+            result.resize(itemsCount);
+            memcpy(result.data(), data, sizeof(T) * itemsCount);
+        }
+        return result;
+    }
+private:
+    ArrayInMarshaler() = delete;
+};
 
 
 }
