@@ -1,0 +1,10 @@
+target_sources(LFramework 
+	PUBLIC
+		Terminal.h
+		TerminalAnsi.h
+		TerminalStream.h
+	PRIVATE
+		Terminal.cpp
+		TerminalStreamCout.cpp
+		TerminalStreamUartStm32.cpp
+)

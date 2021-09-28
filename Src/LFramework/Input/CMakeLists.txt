@@ -1,0 +1,11 @@
+target_sources(LFramework 
+	PUBLIC
+		Input.h
+		Keyboard.h
+		KeysStateManager.h
+		Mouse.h
+	PRIVATE
+		Input.cpp
+		Keyboard.cpp
+		Mouse.cpp
+)

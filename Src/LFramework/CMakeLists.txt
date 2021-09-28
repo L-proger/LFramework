@@ -1,0 +1,29 @@
+target_sources(LFramework 
+	PUBLIC
+		Assert.h
+		BitField.h
+		CMakeLists.txt
+		Debug.h
+		Guid.h
+		System.h
+		SystemArmCortexM.h
+		SystemWindows.h
+		TupleUtils.h
+	PRIVATE
+		BitFieldTest.cpp
+		Syscalls.cpp
+)
+
+add_subdirectory(USB)
+add_subdirectory(UnitTest)
+add_subdirectory(TypeTraits)
+add_subdirectory(Time)
+add_subdirectory(Threading)
+add_subdirectory(Reflection)
+add_subdirectory(MCU)
+add_subdirectory(Macro)
+add_subdirectory(IO)
+add_subdirectory(Input)
+add_subdirectory(Detect)
+add_subdirectory(Containers)
+add_subdirectory(COM)
