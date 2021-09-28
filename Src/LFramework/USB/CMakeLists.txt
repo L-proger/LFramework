@@ -13,5 +13,5 @@ target_sources(LFramework
 		USBTypesTest.cpp
 )
 
-
-
+add_subdirectory(Device)
+add_subdirectory(Host)

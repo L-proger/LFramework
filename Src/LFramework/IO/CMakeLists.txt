@@ -5,3 +5,4 @@ target_sources(LFramework
 	PRIVATE
 		StreamWriter.cpp
 )
+add_subdirectory(Terminal)
