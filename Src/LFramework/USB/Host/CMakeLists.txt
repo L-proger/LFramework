@@ -1,4 +1,4 @@
-target_sources(LFramework 
+target_sources(${PROJECT_NAME} 
 	PUBLIC
 		UsbHDevice.h
 		UsbHEndpoint.h

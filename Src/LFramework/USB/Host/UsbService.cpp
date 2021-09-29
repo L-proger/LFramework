@@ -1,3 +1,7 @@
+#include <LFrameworkConfig.h>
+
+#ifdef LF_USB_HOST
+
 #include "UsbService.h"
 
 #include <initguid.h>
@@ -130,3 +134,4 @@ void UsbService::stopEventsListening(){
     _deviceChangeCallback = nullptr;
 }
 
+#endif

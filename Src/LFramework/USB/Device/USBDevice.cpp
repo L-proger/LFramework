@@ -1,10 +1,8 @@
-#ifndef _WIN32
-
 #include <LFrameworkConfig.h>
 
 #ifdef LF_USB_DEVICE
 
-#include "UsbDevice.h"
+#include <LFramework/USB/Device/USBDevice.h>
 #include "usbd_ioreq.h"
 #include "usbd_ctlreq.h"
 #include "usbd_def.h"
@@ -431,4 +429,4 @@ extern "C" void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd){
 }
 
 #endif
-#endif
+

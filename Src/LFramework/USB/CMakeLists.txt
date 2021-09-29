@@ -1,4 +1,4 @@
-target_sources(LFramework 
+target_sources(${PROJECT_NAME} 
 	PUBLIC
 		USBDevice_Deprecated.h
 		usbd_conf.h

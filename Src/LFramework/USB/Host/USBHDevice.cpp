@@ -1,3 +1,7 @@
+#include <LFrameworkConfig.h>
+
+#ifdef LF_USB_HOST
+
 #ifdef _WIN32
 
 #include "UsbHDevice.h"
@@ -23,5 +27,7 @@ UsbHDevice::UsbHDevice(const std::string& deviceFilePath){
 }
 
 }
+
+#endif
 
 #endif

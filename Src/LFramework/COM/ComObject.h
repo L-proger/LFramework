@@ -154,7 +154,7 @@ struct ComException : std::exception {
    Result code() const {
        return _errorCode;
    }
-   char const* what() const override {
+   char const* what() const noexcept override  {
        return _message.c_str();
    }
    const std::string& message() const {

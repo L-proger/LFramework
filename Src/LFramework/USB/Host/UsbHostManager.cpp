@@ -1,3 +1,8 @@
+#include <LFrameworkConfig.h>
+
+#ifdef LF_USB_HOST
+
+
 #include "UsbHostManager.h"
 
 #include <initguid.h>
@@ -70,3 +75,5 @@ std::vector<UsbHostDeviceInfo> UsbHostManager::enumerateDevices(){
     SetupDiDestroyDeviceInfoList(deviceList);
     return result;
 }
+
+#endif
