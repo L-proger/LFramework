@@ -2,32 +2,37 @@
 
 #ifdef LF_USB_DEVICE
 
-#include <LFramework/USB/Device/USBDevice.h>
-#include "usbd_ioreq.h"
-#include "usbd_ctlreq.h"
-#include "usbd_def.h"
-#include "usbd_core.h"
+#include <UsbDDevice.h>
+#include <usbd_conf.h>
+#include <usbd_def.h>
+#include <usbd_ioreq.h>
+#include <usbd_ctlreq.h>
+
+#include <usbd_core.h>
 #include <stm32f7xx_hal.h>
 #include <LFramework/USB/USBTypes.h>
 #include <LFramework/USB/UsbMicrosoftTypes.h>
 #include <type_traits>
+#include <new>
 
 using namespace LFramework;
 
 extern "C" {
-extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+	extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 }
 
 namespace LFramework::USB {
-	__attribute__((used)) USBD_HandleTypeDef UsbDevice::hUsbDevice {} ;
+	__attribute__((used)) USBD_HandleTypeDef UsbDevice::hUsbDevice{};
 	__attribute__((used)) UsbDDeviceContext* _context = nullptr;
 
 
-volatile USB::Microsoft::CompatId::WinUSBFunction _winusbFunctionDescriptor(0);
+	volatile USB::Microsoft::CompatId::WinUSBFunction _winusbFunctionDescriptor(0);
+
+
 
 //For other-speed description
 __ALIGN_BEGIN volatile USB::DeviceQualifierDescriptor USBD_NDC_DeviceQualifierDesc __ALIGN_END {
-	UsbVersion(2),
+	USB::UsbVersion(2),
 	USB::UsbClass::Device::UseInterfaceClass(),
 	64,
 	1,
@@ -51,11 +56,14 @@ UsbDDeviceContext* UsbDevice::getContext(){
 	return _context;
 }
 
+
+
 void hang(){
 	while(true){
 		asm("nop");
 	}
 }
+
 
 __attribute__((used))  const USBD_DescriptorsTypeDef UsbDevice::_descriptorsTable = {
 	&UsbDevice::getDeviceDescriptor,
@@ -85,6 +93,7 @@ __attribute__((used))  const USBD_ClassTypeDef UsbDevice::_usbClassBinding = {
 	&UsbDevice::coreGetUserStringDesc
 };
 
+
 uint8_t UsbDevice::coreInit(USBD_HandleTypeDef* pdev, uint8_t cfgidx){
 	//TODO: use configuration id
 	for(size_t i = 0; i < _context->getInterfaceCount(); ++i){
@@ -97,6 +106,8 @@ uint8_t UsbDevice::coreInit(USBD_HandleTypeDef* pdev, uint8_t cfgidx){
 	}
 	return USBD_OK;
 }
+
+
 uint8_t UsbDevice::coreDeinit(USBD_HandleTypeDef* pdev, uint8_t cfgidx){
 	//TODO: use configuration id
 
@@ -110,6 +121,7 @@ uint8_t UsbDevice::coreDeinit(USBD_HandleTypeDef* pdev, uint8_t cfgidx){
 	}
 	return USBD_OK;
 }
+
 uint8_t UsbDevice::coreImplSetup(USBD_SetupReqTypedef request, void* data){
 	switch ( request.bmRequest & USB_REQ_RECIPIENT_MASK ){
 	case USB_REQ_RECIPIENT_INTERFACE:{
@@ -142,6 +154,8 @@ uint8_t UsbDevice::coreImplSetup(USBD_SetupReqTypedef request, void* data){
 	}
 	return USBD_OK;
 }
+
+
 uint8_t UsbDevice::coreSetup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef *req){
 	hang();
 	/*if (req->wLength){
@@ -158,12 +172,17 @@ uint8_t UsbDevice::coreSetup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef *req
 	}*/
 	return USBD_OK;
 }
+
+ 
+ 
 uint8_t  UsbDevice::coreEp0RxReady(USBD_HandleTypeDef* pdev){
 	hang();
 	//coreImplSetup(last_request, &ep0Buffer[0]); //data in stage complete => execute request
 	//last_request.bRequest = 0xff;
 	return USBD_OK;
 }
+
+
 
 UsbDInterface* UsbDevice::findInterfaceByEndpointAddress(uint8_t address){
 	if(_context == nullptr){
@@ -181,6 +200,8 @@ UsbDInterface* UsbDevice::findInterfaceByEndpointAddress(uint8_t address){
 	}
 	return nullptr;
 }
+ 
+
 
 uint8_t  UsbDevice::coreDataIn(USBD_HandleTypeDef* pdev, uint8_t epnum){
 	auto interface = findInterfaceByEndpointAddress(USB::EndpointAddress::makeIn(epnum));//TODO: cleanup
@@ -216,7 +237,7 @@ uint8_t  UsbDevice::coreIsoOutIncomplete(USBD_HandleTypeDef* pdev, uint8_t epnum
 uint8_t* UsbDevice::coreGetCfgDesc(uint16_t* length){
 	auto* mem = reinterpret_cast<uint8_t*>(&_descriptorsBuffer);
 	auto* buffer = mem;
-	auto* cd = new(buffer)USB::ConfigurationDescriptor();
+	USB::ConfigurationDescriptor* cd = new(buffer) USB::ConfigurationDescriptor();
 	cd->wTotalLength 		= 0;
 	cd->bNumInterfaces 		= (uint8_t)_context->getInterfaceCount();
 	cd->bConfigurationValue = 0x01;
@@ -260,6 +281,8 @@ struct USBDDummyClassData{
 	uint32_t reserved;
 };
 
+
+
 __attribute__((used)) static USBDDummyClassData _classData = {};
 
 void UsbDevice::start(UsbDDeviceContext* context){
@@ -279,6 +302,7 @@ uint8_t* UsbDevice::coreGetDeviceQualifierDesc (uint16_t *length){
 	*length = sizeof (USBD_NDC_DeviceQualifierDesc);
 	return (uint8_t*)&USBD_NDC_DeviceQualifierDesc;
 }
+
 uint8_t* UsbDevice::coreGetUserStringDesc(USBD_HandleTypeDef* pdev, uint8_t index, uint16_t* length){
 	*length = 0;
 	if ( 0xEE == index ){
@@ -301,6 +325,8 @@ uint8_t* UsbDevice::getManufacturerStringDescriptor(USBD_SpeedTypeDef speed, uin
 uint8_t* UsbDevice::getProductStringDescriptor(USBD_SpeedTypeDef speed, uint16_t* length){
 	return USB::MakeStringDescriptor(_context->productStringDescriptor, &_descriptorsBuffer, sizeof(_descriptorsBuffer), length);
 }
+
+
 uint8_t* UsbDevice::getSerialStringDescriptor(USBD_SpeedTypeDef speed, uint16_t* length){
 	return USB::MakeStringDescriptor(_context->serialStringDescriptor, &_descriptorsBuffer, sizeof(_descriptorsBuffer), length);
 }
@@ -321,111 +347,6 @@ USBD_StatusTypeDef UsbDevice::interfaceRequest(USBD_HandleTypeDef* pdev, USBD_Se
 	return interface->interfaceRequest(pdev, req);
 }
 
-
-
-
-extern "C" USBD_StatusTypeDef USBD_hook_device_request(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req){
-	if((req->bmRequest & USB_REQ_TYPE_MASK) == USB_REQ_TYPE_VENDOR){
-		if(req->bRequest == (uint8_t)USB_VENDOR_CODE_WINUSB){
-			if(req->wIndex == 0x04){
-				USBD_CtlSendData (pdev, (uint8_t*)&_winusbFunctionDescriptor, req->wLength);
-				return USBD_OK;
-			}
-		}
-	}
-	return USBD_FAIL;
-}
-extern "C" USBD_StatusTypeDef USBD_hook_interface_request(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req){
-	return UsbDevice::interfaceRequest(pdev, req);
-}
-
-
-extern "C" void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd){
-	USBD_HandleTypeDef* pdev = (USBD_HandleTypeDef*)hpcd->pData;
-
-	//Hack to support WinUSB requests :(
-	USBD_ParseSetupRequest(&pdev->request, (uint8_t *)hpcd->Setup);
-	pdev->ep0_state = USBD_EP0_SETUP;
-	pdev->ep0_data_len = pdev->request.wLength;
-
-	switch (pdev->request.bmRequest & 0x1F) {
-	case USB_REQ_RECIPIENT_DEVICE:
-		if(USBD_hook_device_request(pdev, &pdev->request) == USBD_OK){
-			return;
-		}
-		break;
-	case USB_REQ_RECIPIENT_INTERFACE:
-		if(USBD_hook_interface_request(pdev, &pdev->request) == USBD_OK){
-			return;
-		}
-		break;
-	}
-
-	USBD_LL_SetupStage((USBD_HandleTypeDef*)hpcd->pData, (uint8_t *)hpcd->Setup);
-}
-
-extern "C" void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd){
-	while(true){
-		asm("nop");
-	}
-}
-
-extern "C" void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd){
-	USBD_SpeedTypeDef speed = USBD_SPEED_FULL;
-	switch (hpcd->Init.speed){
-	case PCD_SPEED_FULL:
-		speed = USBD_SPEED_FULL;
-		break;
-	default:
-		speed = USBD_SPEED_FULL;
-		break;
-	}
-	USBD_LL_SetSpeed((USBD_HandleTypeDef*)hpcd->pData, speed);
-	USBD_LL_Reset((USBD_HandleTypeDef*)hpcd->pData);
-}
-
-extern "C" void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd){
-	//Inform USB library that core enters in suspend Mode
-	if(hpcd->pData != 0){
-		USBD_LL_Suspend((USBD_HandleTypeDef*)hpcd->pData);
-	}
-
-	//Enter in STOP mode
-	if (hpcd->Init.low_power_enable){
-		//Set SLEEPDEEP bit and SleepOnExit of Cortex System Control Register
-		SCB->SCR |= (uint32_t)((uint32_t)(SCB_SCR_SLEEPDEEP_Msk | SCB_SCR_SLEEPONEXIT_Msk));
-	}
-}
-
-extern "C" void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd){
-	while(true){
-		asm("nop");
-	}
-}
-
-extern "C" void HAL_PCD_ISOOUTIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum){
-	while(true){
-		asm("nop");
-	}
-}
-
-extern "C" void HAL_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum){
-	while(true){
-		asm("nop");
-	}
-}
-
-extern "C" void HAL_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd){
-	while(true){
-		asm("nop");
-	}
-}
-
-extern "C" void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd){
-	while(true){
-		asm("nop");
-	}
-}
 }
 
 #endif

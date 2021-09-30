@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef USB_CONF_H_
+#define USB_CONF_H_
 #include <stdint.h>
 #include <stm32f7xx_hal.h>
 
@@ -9,4 +9,6 @@
 #define USBD_SUPPORT_USER_STRING     1
 #define USBD_DEBUG_LEVEL     0
 #define USBD_SELF_POWERED     1
+
+#endif
 

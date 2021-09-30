@@ -3,7 +3,7 @@
 #ifdef LF_USB_DEVICE
 
 #include "UsbDEndpoint.h"
-#include "USBDevice.h"
+#include "USBDDevice.h"
 
 namespace LFramework::USB {
 

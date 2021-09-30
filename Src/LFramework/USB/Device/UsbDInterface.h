@@ -11,7 +11,6 @@
 #include <cstdint>
 
 #include "UsbDEndpoint.h"
-#include "../UsbInterface.h"
 #define USB_VENDOR_CODE_WINUSB 'P'
 
 

@@ -3,11 +3,11 @@ target_sources(${PROJECT_NAME}
 		UsbDBulkInterface.h
 		UsbDDeviceContext.h
 		UsbDEndpoint.h
-		USBDevice.h
+		UsbDDevice.h
 		UsbDInterface.h
-	PRIVATE
+	
 		UsbDEndpoint.cpp
-		USBDevice.cpp
+		USBDDevice.cpp
 		UsbDLowLevel.cpp
 )
 

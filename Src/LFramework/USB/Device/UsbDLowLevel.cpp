@@ -7,12 +7,12 @@
 #include <stm32f7xx_hal.h>
 #include <usbd_def.h>
 #include <usbd_core.h>
-#include "UsbDevice.h"
+#include "UsbDDevice.h"
 
 using namespace LFramework::USB;
 
 extern "C" {
-__attribute__((used)) extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+  extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 }
 
 extern "C" USBD_StatusTypeDef halToUsbdStatus(HAL_StatusTypeDef status){
