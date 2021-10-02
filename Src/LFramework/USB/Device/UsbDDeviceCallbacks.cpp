@@ -1,6 +1,14 @@
 #include <usbd_def.h>
 #include <LFramework/USB/Device/UsbDDevice.h>
 
+#include <LFramework/USB/Device/UsbDDevice.h>
+#include <LFramework/USB/USBTypes.h>
+#include <LFramework/USB/UsbMicrosoftTypes.h>
+
+using namespace LFramework;
+
+volatile USB::Microsoft::CompatId::WinUSBFunction _winusbFunctionDescriptor(0);
+
 
 extern "C" USBD_StatusTypeDef USBD_hook_device_request(USBD_HandleTypeDef * pdev, USBD_SetupReqTypedef * req) {
 	if ((req->bmRequest & USB_REQ_TYPE_MASK) == USB_REQ_TYPE_VENDOR) {
@@ -14,7 +22,7 @@ extern "C" USBD_StatusTypeDef USBD_hook_device_request(USBD_HandleTypeDef * pdev
 	return USBD_FAIL;
 }
 extern "C" USBD_StatusTypeDef USBD_hook_interface_request(USBD_HandleTypeDef * pdev, USBD_SetupReqTypedef * req) {
-	return UsbDevice::interfaceRequest(pdev, req);
+	return USB::UsbDevice::interfaceRequest(pdev, req);
 }
 
 

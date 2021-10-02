@@ -9,6 +9,7 @@ target_sources(${PROJECT_NAME}
 		UsbDEndpoint.cpp
 		USBDDevice.cpp
 		UsbDLowLevel.cpp
+		UsbDDeviceCallbacks.cpp
 )
 
 

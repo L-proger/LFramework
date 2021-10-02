@@ -26,8 +26,6 @@ namespace LFramework::USB {
 	__attribute__((used)) UsbDDeviceContext* _context = nullptr;
 
 
-	volatile USB::Microsoft::CompatId::WinUSBFunction _winusbFunctionDescriptor(0);
-
 
 
 //For other-speed description
