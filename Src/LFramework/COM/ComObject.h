@@ -307,11 +307,15 @@ public:
 };
 
 
+
+
+
+
 template<class TInterface, class = void>
 class HasInterfaceWrapper : public std::true_type {};
 
 template<class TInterface>
-class HasInterfaceWrapper<TInterface, std::void_t<typename InterfaceWrapper<TInterface>::NotSpecialized>> : public std::false_type {};
+class HasInterfaceWrapper<TInterface, std::void_t<typename LFramework::InterfaceWrapper<TInterface>::NotSpecialized>> : public std::false_type {};
 
 template<class TInterface>
 class ComPtr {
@@ -560,6 +564,26 @@ public:
     }
 private:
     ArrayInMarshaler() = delete;
+};
+
+
+template<>
+class InterfaceWrapper<IUnknown> {
+public:
+    template<typename TInterface, typename = typename std::enable_if<std::is_base_of<InterfaceAbi<IUnknown>, InterfaceAbi<TInterface>>::value>::type>
+    ComPtr<TInterface> queryInterface() {
+        if (_abi == nullptr) {
+            return {};
+        }
+
+        ComPtr<TInterface> result{};
+        reinterpret_cast<InterfaceAbi<IUnknown>*>(_abi)->queryInterface(TInterface::VMT::ID(), reinterpret_cast<void**>(&result));
+        return result;
+
+    }
+protected:
+    void* _abi = nullptr;
+
 };
 
 
