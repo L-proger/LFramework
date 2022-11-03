@@ -1,17 +1,8 @@
-
-if(DEFINED LFRAMEWORK_LIB)
-
 set(PROJECT_NAME "LFramework")
-add_library(LFramework STATIC)
-set_property(TARGET LFramework PROPERTY CXX_STANDARD 17)
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE "${LFRAMEWORK_CONFIG_FILE_DIR}")
 
-target_include_directories(${PROJECT_NAME} PRIVATE "${LFRAMEWORK_CONFIG_FILE_DIR}")
-
-endif()
-
-
-
-target_include_directories(${PROJECT_NAME} PUBLIC "Src")
-target_include_directories(${PROJECT_NAME} PUBLIC "Src/LFramework/USB/Device")
-target_include_directories(${PROJECT_NAME} PUBLIC "Src/LFramework/USB")
+target_include_directories(${PROJECT_NAME} INTERFACE "Src")
+target_include_directories(${PROJECT_NAME} INTERFACE "Src/LFramework/USB/Device")
+target_include_directories(${PROJECT_NAME} INTERFACE "Src/LFramework/USB")
 add_subdirectory(Src/LFramework)

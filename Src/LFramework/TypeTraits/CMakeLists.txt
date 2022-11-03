@@ -1,7 +1,7 @@
 target_sources(${PROJECT_NAME} 
-	PUBLIC
-		FunctionTraits.h
-		Integral.h
+INTERFACE
+	FunctionTraits.h
+	Integral.h
 )
 
 

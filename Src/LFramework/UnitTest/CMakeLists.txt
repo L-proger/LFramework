@@ -1,8 +1,7 @@
 target_sources(${PROJECT_NAME} 
-	PUBLIC
-		UnitTest.h
-	PRIVATE
-		UnitTest.cpp
+INTERFACE
+	UnitTest.h
+	UnitTest.cpp
 )
 
 

@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} 
-	PUBLIC
+	INTERFACE
 		Assert.h
 		BitField.h
 		CMakeLists.txt
@@ -9,7 +9,7 @@ target_sources(${PROJECT_NAME}
 		SystemArmCortexM.h
 		SystemWindows.h
 		TupleUtils.h
-	PRIVATE
+
 		BitFieldTest.cpp
 		Syscalls.cpp
 )

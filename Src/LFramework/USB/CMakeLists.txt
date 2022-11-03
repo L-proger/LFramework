@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} 
-	PUBLIC
+INTERFACE
 		USBDevice_Deprecated.h
 		usbd_conf.h
 		UsbEndpoint.h
@@ -9,7 +9,6 @@ target_sources(${PROJECT_NAME}
 		UsbPollingTransfer.h
 		UsbTransfer.h
 		USBTypes.h
-	PRIVATE
 		USBTypesTest.cpp
 )
 

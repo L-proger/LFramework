@@ -1,8 +1,8 @@
 target_sources(${PROJECT_NAME} 
-	PUBLIC
+INTERFACE
 		HalLibrary.h
 		HardFaultHandler.h
-	PRIVATE
+	
 		HardFaultHandler.cpp
 )
 

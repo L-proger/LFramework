@@ -1,9 +1,9 @@
 target_sources(${PROJECT_NAME} 
-	PUBLIC
+INTERFACE
 		Terminal.h
 		TerminalAnsi.h
 		TerminalStream.h
-	PRIVATE
+	
 		Terminal.cpp
 		TerminalStreamCout.cpp
 		TerminalStreamUartStm32.cpp
