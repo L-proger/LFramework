@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.21)
 project(LFramework LANGUAGES C CXX)
 set(PROJECT_NAME LFramework)
 add_library(LFramework INTERFACE)
