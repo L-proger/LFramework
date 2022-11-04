@@ -1,5 +1,6 @@
-set(PROJECT_NAME "LFramework")
-add_library(${PROJECT_NAME} INTERFACE)
+project(LFramework LANGUAGES C CXX)
+set(PROJECT_NAME LFramework)
+add_library(LFramework INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE "${LFRAMEWORK_CONFIG_FILE_DIR}")
 
 target_include_directories(${PROJECT_NAME} INTERFACE "Src")

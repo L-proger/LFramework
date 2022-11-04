@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} 
-INTERFACE
+PUBLIC
 	CriticalSection.h
 	CriticalSectionFreeRTOS.h
 	CriticalSectionStd.h

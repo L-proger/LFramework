@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} 
-INTERFACE
+PUBLIC
 	DetectCPU.h
 	DetectEndianness.h
 	DetectOS.h

@@ -1,17 +1,17 @@
 target_sources(${PROJECT_NAME} 
-	INTERFACE
-		Assert.h
-		BitField.h
-		CMakeLists.txt
-		Debug.h
-		Guid.h
-		System.h
-		SystemArmCortexM.h
-		SystemWindows.h
-		TupleUtils.h
+PUBLIC
+	Assert.h
+	BitField.h
+	CMakeLists.txt
+	Debug.h
+	Guid.h
+	System.h
+	SystemArmCortexM.h
+	SystemWindows.h
+	TupleUtils.h
 
-		BitFieldTest.cpp
-		Syscalls.cpp
+	BitFieldTest.cpp
+	Syscalls.cpp
 )
 
 add_subdirectory(USB)
