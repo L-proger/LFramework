@@ -5,6 +5,8 @@ PUBLIC
 	CMakeLists.txt
 	Debug.h
 	Guid.h
+	GuidUtils.h
+	GuidUtils.cpp
 	System.h
 	SystemArmCortexM.h
 	SystemWindows.h
@@ -12,6 +14,8 @@ PUBLIC
 
 	BitFieldTest.cpp
 	Syscalls.cpp
+
+	Text/Encoding.h
 )
 
 add_subdirectory(USB)
