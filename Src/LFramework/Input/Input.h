@@ -1,5 +1,4 @@
-#ifndef Input_h__
-#define Input_h__
+#pragma once
 
 #include <memory>
 #include <Windows.h>
@@ -23,4 +22,3 @@ private:
 	std::vector<std::shared_ptr<Mouse>> _mice;
 	std::vector<std::shared_ptr<Keyboard>> _keyboards;
 };
-#endif // Input_h__

@@ -1,5 +1,4 @@
-#ifndef Keyboard_h__
-#define Keyboard_h__
+#pragma once
 
 #include <Windows.h>
 #include <cstdint>
@@ -26,4 +25,3 @@ private:
 
 	KeysStateManager<0xff, Keyboard> _keys_manager;
 };
-#endif // Keyboard_h__

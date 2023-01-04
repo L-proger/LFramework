@@ -1,8 +1,8 @@
 target_sources(${PROJECT_NAME} 
-	PUBLIC
-		Stream.h
-		StreamWriter.h
-	PRIVATE
-		StreamWriter.cpp
+PUBLIC
+	Stream.h
+	StreamWriter.h
+
+	StreamWriter.cpp
 )
 add_subdirectory(Terminal)

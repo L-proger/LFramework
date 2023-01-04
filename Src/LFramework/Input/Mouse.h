@@ -1,5 +1,4 @@
-#ifndef Mouse_h__
-#define Mouse_h__
+#pragma once
 
 #include <Windows.h>
 #include <cstdint>
@@ -31,5 +30,3 @@ private:
 	bool _has_horizontal_wheel;
 };
 
-
-#endif // Mouse_h__
