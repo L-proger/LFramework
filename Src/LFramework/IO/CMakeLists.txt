@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} 
-PUBLIC
+INTERFACE
 	Stream.h
 	StreamWriter.h
 

@@ -17,7 +17,7 @@ struct Guid {
 
     Guid() = default;
 
-    Guid(std::uint32_t data1, std::uint32_t data2_3, std::uint32_t data4_0, std::uint32_t data4_1) : data1(data1), data2_3(data2_3), data4_0(data4_0), data4_1(data4_1) {}
+    constexpr Guid(std::uint32_t data1, std::uint32_t data2_3, std::uint32_t data4_0, std::uint32_t data4_1) : data1(data1), data2_3(data2_3), data4_0(data4_0), data4_1(data4_1) {}
 
     constexpr bool operator ==(const Guid& rhs) const {
         return

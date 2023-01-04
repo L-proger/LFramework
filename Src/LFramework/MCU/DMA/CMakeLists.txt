@@ -1,4 +1,4 @@
 target_sources(${PROJECT_NAME} 
-PUBLIC
+INTERFACE
 	DMA.h
 )

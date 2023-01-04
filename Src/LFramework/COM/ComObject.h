@@ -170,7 +170,7 @@ template<>
 struct InterfaceAbi<IUnknown> {
 public:
     using Base = void;
-    static constexpr InterfaceID ID() { return { 0x00000000, 0x0000, 0x0000, {0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46} }; }
+    static constexpr InterfaceID ID() { return { 0x00000000, 0x0000000, 0x000000C0, 0x46000000 }; }
     template<class TInterface>
     friend class ComPtr;
     friend class ComObject;

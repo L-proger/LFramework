@@ -1,4 +1,4 @@
 target_sources(${PROJECT_NAME} 
-PUBLIC
+INTERFACE
 	ForEach.h
 )

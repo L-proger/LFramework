@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} 
-PUBLIC
+INTERFACE
 	Mcu.h
 )
 add_subdirectory(DMA)

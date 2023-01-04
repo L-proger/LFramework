@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} 
-PUBLIC
+INTERFACE
 	Assert.h
 	BitField.h
 	CMakeLists.txt

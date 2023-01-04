@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} 
-PUBLIC
+INTERFACE
 	Input.h
 	Keyboard.h
 	KeysStateManager.h
