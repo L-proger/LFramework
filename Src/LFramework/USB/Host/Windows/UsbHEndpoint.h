@@ -8,12 +8,12 @@
 
 namespace LFramework::USB {
 
-class Future {
-public:
-    virtual ~Future() = default;
-    virtual size_t wait() = 0;
-};
-class WinUsbFuture : public Future {
+//class Future {
+//public:
+//    virtual ~Future() = default;
+//    virtual size_t wait() = 0;
+//};
+class WinUsbFuture : public IUsbTransfer {
 public:
     WinUsbFuture(HANDLE deviceHandle, std::unique_ptr<OVERLAPPED> &&overlapped):_deviceHandle(deviceHandle), _overlapped(std::move(overlapped)){
 

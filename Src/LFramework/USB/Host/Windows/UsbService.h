@@ -9,14 +9,8 @@
 #include <future>
 #include <LFramework/Threading/Semaphore.h>
 
-struct UsbHostDeviceInfo {
-    uint16_t vid;
-    uint16_t pid;
-    std::string serialNumber;
-    std::string path;
-};
 
-class UsbService {
+class UsbService : public IUsbService {
 public:
     UsbHostDeviceInfo getUsbDeviceInfo(const std::string& path);
     std::vector<UsbHostDeviceInfo> enumerateDevices();

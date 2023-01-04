@@ -9,6 +9,7 @@
 #include <atomic>
 #include <string>
 #include <vector>
+#include <cstring>
 
 #if (LF_TARGET_OS == LF_OS_WINDOWS) || (LF_TARGET_OS == LF_OS_CYGWIN)
 #define LFRAMEWORK_COM_CALL __stdcall

@@ -1,16 +1,23 @@
 target_sources(${PROJECT_NAME} 
-	PUBLIC
-		UsbHDevice.h
-		UsbHEndpoint.h
-		UsbHException.h
-		UsbHInterface.h
-		UsbHostManager.h
-		UsbNotifyWindow.h
-		UsbService.h
-	PRIVATE
-		USBHDevice.cpp
-		UsbHostManager.cpp
-		UsbService.cpp
+INTERFACE
+	IUsbDevice.h
+	IUsbEndpoint.h
+	IUsbInterface.h
+	IUsbService.h
+	IUsbTransfer.h
+	UsbException.h
 )
 
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+target_sources(${PROJECT_NAME} 
+INTERFACE
+	Linux/NetlinkClient.h
+	Linux/NetlinkClient.cpp
+
+	Linux/NetlinkReader.h
+)
+
+endif()
 
