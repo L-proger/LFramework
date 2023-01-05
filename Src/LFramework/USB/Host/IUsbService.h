@@ -23,4 +23,6 @@ public:
     virtual void stopEventsListening() = 0;
 };
 
+IUsbService* createUsbService();
+
 }

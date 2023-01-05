@@ -15,9 +15,14 @@ target_sources(${PROJECT_NAME}
 INTERFACE
 	Linux/NetlinkClient.h
 	Linux/NetlinkClient.cpp
-
 	Linux/NetlinkReader.h
+	Linux/UsbService.h
+	Linux/UsbService.cpp
+	Linux/UsbDevice.h
+	Linux/UsbDevice.cpp
+	Linux/UsbInterface.h
 )
+
 
 endif()
 

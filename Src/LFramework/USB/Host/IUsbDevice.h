@@ -12,4 +12,6 @@ public:
     virtual std::size_t getInterfaceCount() const = 0;
 };
 
+IUsbDevice* openUsbDevice(const std::string& path);
+
 }
