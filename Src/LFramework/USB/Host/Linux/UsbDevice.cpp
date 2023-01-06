@@ -1,6 +1,8 @@
 #include "UsbDevice.h"
 #include "UsbInterface.h"
 #include "SysfsUtils.h"
+#include "UsbIoctl.h"
+#include "UsbBulkTransfer.h"
 
 #include <cstdint>
 
@@ -10,6 +12,8 @@
 
 #include <sys/types.h>
 #include <dirent.h>
+
+#include <iostream>
 
 namespace LFramework::USB {
 
@@ -44,9 +48,33 @@ static std::string getDeviceNodePath(const std::string &path) {
 
 UsbDevice::UsbDevice(const std::string& path) {
     auto deviceNodePath = getDeviceNodePath(path);
+
     _deviceFileDescriptor = open(deviceNodePath.c_str(), O_RDWR | O_NONBLOCK | O_ASYNC);
+    if(_deviceFileDescriptor.value() < 0){
+        throw std::runtime_error("Failed to open USB device");
+    }
+
+    _epoll.emplace(_deviceFileDescriptor.value(), EPOLLIN | EPOLLOUT | EPOLLERR);
+
+    _deviceCaps = getUsbDeviceCapabilities(_deviceFileDescriptor.value());
 
     enumerateInterfaces(path);
+
+    _epollThreadRunning = true;
+    _epollThread = std::thread([this](){
+        epollThreadHandler();
+    });
+}
+
+UsbDevice::~UsbDevice(){
+    _interfaces.clear();
+    _epoll.reset();
+    _deviceFileDescriptor.close();
+    _epollThreadRunning = false;
+
+    if(_epollThread.joinable()) {
+        _epollThread.join();
+    }
 }
 
 void UsbDevice::enumerateInterfaces(const std::string& sysfsDevicePath){
@@ -66,7 +94,7 @@ void UsbDevice::enumerateInterfaces(const std::string& sysfsDevicePath){
             continue;
         }
 
-        _interfaces.push_back(std::make_shared<UsbInterface>(_deviceFileDescriptor, sysfsDevicePath, interfaceDirectory) );
+        _interfaces.push_back(std::make_shared<UsbInterface>(_deviceFileDescriptor.value(), sysfsDevicePath, interfaceDirectory, _deviceCaps) );
 
         //UsbInterfaceParameters interfaceParameters;
         //initInterface(interfaceDirectory, &interfaceParameters);
@@ -75,12 +103,66 @@ void UsbDevice::enumerateInterfaces(const std::string& sysfsDevicePath){
     closedir(directory);
 }
 
+void UsbDevice::epollThreadHandler(){
+    UsbUrb *context = nullptr;
+    epoll_event event{};
+    while(_epollThreadRunning){
+        auto readyFileDescriptors = epoll_wait(_epoll->fileDescriptor()->value(), &event, 1, 100); 
+
+        //TODO: check if device file descriptor is still valid?
+        if(readyFileDescriptors < 0){
+            int err = errno;
+            if(err == EINTR){
+                continue;
+            }else{
+                break;
+            }
+            
+        }
+
+        if(((event.events & EPOLLERR) != 0) ||
+                (errno == EBADF) ||
+                (errno == EFAULT) ||
+                (errno == EINVAL) ) {
+            break;
+        }
+
+        if(errno == EAGAIN) { //Timeout 
+            continue;
+        }
+
+        if((readyFileDescriptors > 0) && ((event.events & EPOLLOUT) != 0)){
+            int urbCompletionStatus = ioctl(_deviceFileDescriptor.value(), IOCTL_USBFS_REAPURB, &context);
+
+            int err = errno;
+            if(urbCompletionStatus < 0){
+                if (errno == EAGAIN)
+                    continue;
+                if (errno == ENODEV)
+                    continue;
+            }
+
+            if (context != nullptr) {
+                auto transfer = static_cast<UsbBulkTransfer*>(context->userContext);
+                if(transfer != nullptr){
+                    transfer->notify(context);
+                }
+            }
+        }
+    }
+
+    std::cout << "Device Epoll thread exit" << std::endl;
+}
+
 
 std::shared_ptr<IUsbInterface> UsbDevice::getInterface(std::size_t id) {
-    throw std::runtime_error("Not implemented");
+    if(id >= _interfaces.size()){
+        throw std::runtime_error("Invalid interface ID");
+    }
+    return _interfaces[id];
 }
 std::size_t UsbDevice::getInterfaceCount() const {
-    throw std::runtime_error("Not implemented");
+    return _interfaces.size();
 }
 
 

@@ -1,8 +1,11 @@
 #pragma once
 
 #include "../IUsbInterface.h"
+#include "UsbHostEndpoint.h"
 #include <stdexcept>
 #include "SysfsUtils.h"
+#include <vector>
+#include "UsbIoctl.h"
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -31,8 +34,8 @@ EndpointType toEndpointType(const std::string &endpointTypeStr) {
 
 class UsbInterface : public IUsbInterface {
 public:
-    UsbInterface(int deviceFileDescriptor, const std::string& deviceDirPath, const std::string& interfaceDirPath) 
-        : _deviceFileDescriptor(deviceFileDescriptor), _deviceDirPath(deviceDirPath), _interfaceDirPath(interfaceDirPath){
+    UsbInterface(int deviceFileDescriptor, const std::string& deviceDirPath, const std::string& interfaceDirPath, std::uint32_t deviceCaps) 
+        : _deviceFileDescriptor(deviceFileDescriptor), _deviceDirPath(deviceDirPath), _interfaceDirPath(interfaceDirPath), _deviceCaps(deviceCaps){
 
         _descriptor.bAlternateSetting = SysfsUtils::readIntDeviceAttribute<std::uint8_t>(interfaceDirPath, "bAlternateSetting", 16);
         _descriptor.bInterfaceNumber = SysfsUtils::readIntDeviceAttribute<std::uint8_t>(interfaceDirPath, "bInterfaceNumber", 16);
@@ -44,15 +47,20 @@ public:
         //TODO: implement somehow
         //_descriptor.iInterface
 
+        claimInterface(_deviceFileDescriptor, _descriptor.bInterfaceNumber);
 
         enumerateEndpoints();
     }
 
-    IUsbEndpoint* getEndpoint(bool isInEndpoint, uint8_t id) override{
-        throw std::runtime_error("Not implemented");
+    ~UsbInterface() {
+        releaseInterface(_deviceFileDescriptor, _descriptor.bInterfaceNumber);
     }
-    const IUsbEndpoint* getEndpoint(bool isInEndpoint, uint8_t id) const override{
-        throw std::runtime_error("Not implemented");
+
+    IUsbHostEndpoint* getEndpoint(bool isInEndpoint, uint8_t id) override{
+        return const_cast<IUsbHostEndpoint*>(getEndpointImpl(isInEndpoint, id));
+    }
+    const IUsbHostEndpoint* getEndpoint(bool isInEndpoint, uint8_t id) const override{
+         return getEndpointImpl(isInEndpoint, id);
     }
     const USB::InterfaceDescriptor& getInterfaceDescriptor() const override{
         return _descriptor;
@@ -62,6 +70,20 @@ private:
     int _deviceFileDescriptor;
     std::string _deviceDirPath;
     std::string _interfaceDirPath;
+
+    std::vector<std::shared_ptr<IUsbHostEndpoint>> _inEndpoints;
+    std::vector<std::shared_ptr<IUsbHostEndpoint>> _outEndpoints;
+
+    std::uint32_t _deviceCaps;
+
+    const IUsbHostEndpoint* getEndpointImpl(bool isInEndpoint, uint8_t id) const {
+        auto& endpoints = isInEndpoint ? _inEndpoints : _outEndpoints;
+        if(id >= endpoints.size()){
+            return nullptr;
+        }
+        return endpoints[id].get();
+    }
+
 
     void enumerateEndpoints() {
 
@@ -88,11 +110,9 @@ private:
             endpointDescriptor.bmAttributes.setType(toEndpointType(SysfsUtils::readDeviceAttribute(endpointDirPath, "type")));
 
             if(endpointDescriptor.bEndpointAddress.isIn()){
-                throw std::runtime_error("Not implemented");
-                //_inEndpoints.push_back(std::make_shared<UsbHEndpoint>(endpointDescriptor, device, handle));
+                _inEndpoints.push_back(std::make_shared<UsbHostEndpoint>(endpointDescriptor, _deviceFileDescriptor, _deviceCaps));
             }else{
-                throw std::runtime_error("Not implemented");
-                //_outEndpoints.push_back(std::make_shared<UsbHEndpoint>(endpointDescriptor, device, handle));
+                _outEndpoints.push_back(std::make_shared<UsbHostEndpoint>(endpointDescriptor, _deviceFileDescriptor, _deviceCaps));
             }
         }
         closedir(directory);

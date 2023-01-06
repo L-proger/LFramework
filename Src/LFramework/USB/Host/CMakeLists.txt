@@ -1,7 +1,7 @@
 target_sources(${PROJECT_NAME} 
 INTERFACE
 	IUsbDevice.h
-	IUsbEndpoint.h
+	IUsbHostEndpoint.h
 	IUsbInterface.h
 	IUsbService.h
 	IUsbTransfer.h
@@ -21,6 +21,10 @@ INTERFACE
 	Linux/UsbDevice.h
 	Linux/UsbDevice.cpp
 	Linux/UsbInterface.h
+	Linux/UsbHostEndpoint.h
+	Linux/UsbHostEndpoint.cpp
+	Linux/UsbIoctl.h
+	Linux/UsbBulkTransfer.h
 )
 
 

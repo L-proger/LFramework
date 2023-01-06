@@ -6,10 +6,10 @@
 
 namespace LFramework::USB {
 
-class IUsbEndpoint : public UsbEndpoint {
+class IUsbHostEndpoint : public UsbEndpoint {
 public:
-    IUsbEndpoint(const USB::EndpointDescriptor& descriptor):UsbEndpoint(descriptor){}
-    virtual ~IUsbEndpoint() = default;
+    IUsbHostEndpoint(const USB::EndpointDescriptor& descriptor):UsbEndpoint(descriptor){}
+    virtual ~IUsbHostEndpoint() = default;
     virtual std::shared_ptr<IUsbTransfer> transferAsync(void* buffer, size_t size) = 0;
 };
 
