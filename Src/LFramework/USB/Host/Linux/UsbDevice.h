@@ -22,6 +22,7 @@ struct FileDescriptor {
             close();
             _value = newValue;
         }
+        return *this;
     }
 
     void close() {

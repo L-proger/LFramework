@@ -27,7 +27,26 @@ public:
        
     }
     UsbDeviceInfo getUsbDeviceInfo(const std::string& path) override {
+        UsbDeviceInfo result;
 
+        std::string idVendor = SysfsUtils::readDeviceAttribute(path, "idVendor");
+        if(idVendor.empty()){
+            throw std::runtime_error("Failed to read vendor id");
+        }
+        std::string idProduct = SysfsUtils::readDeviceAttribute(path, "idProduct");
+        if(idProduct.empty()){
+            throw std::runtime_error("Failed to read product id");
+        }
+
+        std::string serial = SysfsUtils::readDeviceAttribute(path, "serial");
+
+        UsbDeviceInfo info = {};
+        info.path = path;
+        info.vid = std::strtol(idVendor.c_str(), nullptr, 16);
+        info.pid = std::strtol(idProduct.c_str(), nullptr, 16);
+        info.serialNumber = serial;
+
+        return info;
     }
 
     
@@ -72,10 +91,16 @@ public:
         return result;
     }
     bool startEventsListening(std::function<void()> deviceChangeCallback) override {
-        _deviceChangeCallback = deviceChangeCallback;
-
-        auto netlinkClient = std::make_shared<LFramework::USB::NetlinkClient>();
-        _netlink = std::make_shared<LFramework::USB::NetlinkReader>(netlinkClient, [this](const NetlinkReader::DeviceEvent& event){ onUsbEvent(event); });
+        try{
+            _deviceChangeCallback = deviceChangeCallback;
+            auto netlinkClient = std::make_shared<LFramework::USB::NetlinkClient>();
+            _netlink = std::make_shared<LFramework::USB::NetlinkReader>(netlinkClient, [this](const NetlinkReader::DeviceEvent& event){ onUsbEvent(event); });
+            return true;
+        }catch(...){    
+            _deviceChangeCallback = nullptr;
+            return false;
+        }
+      
 
     }
     void stopEventsListening() override {
