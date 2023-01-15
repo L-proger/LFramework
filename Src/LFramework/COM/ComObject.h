@@ -174,7 +174,6 @@ public:
     template<class TInterface>
     friend class ComPtr;
     friend class ComObject;
-private:
     virtual Result LFRAMEWORK_COM_CALL queryInterface(const InterfaceID& riid, void** ppvObject) = 0;
     virtual std::uint32_t LFRAMEWORK_COM_CALL addRef() = 0;
     virtual std::uint32_t LFRAMEWORK_COM_CALL release() = 0;
@@ -576,15 +575,12 @@ public:
         if (_abi == nullptr) {
             return {};
         }
-
         ComPtr<TInterface> result{};
-        reinterpret_cast<InterfaceAbi<IUnknown>*>(_abi)->queryInterface(TInterface::VMT::ID(), reinterpret_cast<void**>(&result));
+        reinterpret_cast<InterfaceAbi<IUnknown>*>(_abi)->queryInterface(InterfaceAbi<TInterface>::ID(), reinterpret_cast<void**>(&result));
         return result;
-
     }
 protected:
     void* _abi = nullptr;
-
 };
 
 
