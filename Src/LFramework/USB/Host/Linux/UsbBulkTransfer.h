@@ -18,7 +18,7 @@ public:
     UsbBulkTransfer(int usbDeviceFileDescriptor, std::uint32_t deviceCaps, std::uint8_t endpointAddress, const void* data, std::size_t size) 
         : _usbDeviceFileDescriptor(usbDeviceFileDescriptor){
     
-        std::cout << "BulkTransfer: address = 0x" << std::hex << (uint32_t)endpointAddress  << std::dec << " size = " << size  << std::endl;
+        //std::cout << "BulkTransfer: address = 0x" << std::hex << (uint32_t)endpointAddress  << std::dec << " size = " << size  << std::endl;
 
         bool supportsBulkContinuation = (deviceCaps & UsbCaps::BulkContinuation) != 0;
 
