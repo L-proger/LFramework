@@ -14,16 +14,19 @@ INTERFACE
 	BitFieldTest.cpp
 	Syscalls.cpp
 	Text/Encoding.h
+
+	TypeTraits/FunctionTraits.h
+	TypeTraits/Integral.h
+
+	Reflection/Reflection.h
 )
 
 add_subdirectory(USB)
 add_subdirectory(UnitTest)
 
 
-#add_subdirectory(TypeTraits)
 #add_subdirectory(Time)
 #add_subdirectory(Threading)
-#add_subdirectory(Reflection)
 #add_subdirectory(MCU)
 #add_subdirectory(Macro)
 #add_subdirectory(IO)
