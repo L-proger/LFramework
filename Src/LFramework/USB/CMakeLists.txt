@@ -1,4 +1,9 @@
-target_sources(${PROJECT_NAME} 
+
+
+add_library(LFrameworkUsb INTERFACE )
+add_library( LFramework::Usb ALIAS LFrameworkUsb )
+
+target_sources(LFrameworkUsb
 INTERFACE
 	USBDevice_Deprecated.h
 	usbd_conf.h
@@ -13,4 +18,10 @@ INTERFACE
 )
 
 add_subdirectory(Device)
-add_subdirectory(Host)
+#add_subdirectory(Host)
+
+
+target_include_directories(LFrameworkUsb
+INTERFACE
+	.
+)

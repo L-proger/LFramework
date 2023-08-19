@@ -1,9 +1,5 @@
 #pragma once
 
-#include <LFrameworkConfig.h>
-
-#ifdef LF_USB_DEVICE
-
 #include <stm32f7xx_hal.h>
 #include <usbd_def.h>
 #include "UsbDDeviceContext.h"
@@ -51,5 +47,3 @@ private:
 };
 
 }
-
-#endif

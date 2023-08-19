@@ -1,6 +1,5 @@
 #pragma once
 
-#include "LFrameworkConfig.h"
 
 #ifdef LF_THREADING
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "LFrameworkConfig.h"
-
 //OS Types
 #define LF_OS_NONE 0
 #define LF_OS_WINDOWS 1

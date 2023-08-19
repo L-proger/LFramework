@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(LFramework LANGUAGES C CXX)
-set(PROJECT_NAME LFramework)
-add_library(LFramework INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE "${LFRAMEWORK_CONFIG_FILE_DIR}")
 
-target_include_directories(${PROJECT_NAME} INTERFACE "Src")
-target_include_directories(${PROJECT_NAME} INTERFACE "Src/LFramework/USB/Device")
-target_include_directories(${PROJECT_NAME} INTERFACE "Src/LFramework/USB")
+add_library(LFramework INTERFACE)
+target_include_directories(LFramework INTERFACE "Src")
 add_subdirectory(Src/LFramework)

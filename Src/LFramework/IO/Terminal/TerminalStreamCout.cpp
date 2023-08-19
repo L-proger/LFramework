@@ -1,6 +1,5 @@
 #include "TerminalStream.h"
 
-#include <LFrameworkConfig.h>
 
 #ifdef LF_TERMINAL_STREAM_COUT
 

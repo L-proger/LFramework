@@ -1,7 +1,3 @@
-#include <LFrameworkConfig.h>
-
-#ifdef LF_USB_DEVICE
-
 #include "UsbDEndpoint.h"
 #include "UsbDDevice.h"
 
@@ -39,5 +35,3 @@ void UsbDEndpoint::onRxCompleteIsr(uint32_t rxLength){
 }
 
 }
-
-#endif

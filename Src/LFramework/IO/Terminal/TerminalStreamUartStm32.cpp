@@ -1,7 +1,5 @@
 #include "TerminalStream.h"
 
-#include <LFrameworkConfig.h>
-
 #ifdef LF_TERMINAL_STREAM_USART_STM32
 
 #include <usart.h>

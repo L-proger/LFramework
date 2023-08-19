@@ -1,7 +1,3 @@
-#include <LFrameworkConfig.h>
-
-#ifdef LF_USB_DEVICE
-
 #include <UsbDDevice.h>
 #include <usbd_conf.h>
 #include <usbd_def.h>
@@ -346,6 +342,3 @@ USBD_StatusTypeDef UsbDevice::interfaceRequest(USBD_HandleTypeDef* pdev, USBD_Se
 }
 
 }
-
-#endif
-

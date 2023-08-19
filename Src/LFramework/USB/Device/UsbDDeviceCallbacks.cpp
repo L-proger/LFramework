@@ -1,6 +1,3 @@
-
-#include <LFrameworkConfig.h>
-#ifdef LF_USB_DEVICE
 #include <usbd_def.h>
 #include <LFramework/USB/Device/UsbDDevice.h>
 
@@ -117,5 +114,3 @@ extern "C" void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef * hpcd) {
 		asm("nop");
 	}
 }
-
-#endif

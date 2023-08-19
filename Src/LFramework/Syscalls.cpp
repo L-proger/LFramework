@@ -1,5 +1,3 @@
-#include "LFrameworkConfig.h"
-
 #include "Detect/DetectOS.h"
 #include "Assert.h"
 

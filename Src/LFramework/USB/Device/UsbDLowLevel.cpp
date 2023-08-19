@@ -1,9 +1,3 @@
-#ifndef _WIN32
-
-#include <LFrameworkConfig.h>
-
-#ifdef LF_USB_DEVICE
-
 #include <stm32f7xx_hal.h>
 #include <usbd_def.h>
 #include <usbd_core.h>
@@ -74,7 +68,7 @@ extern "C" USBD_StatusTypeDef  USBD_LL_StallEP (USBD_HandleTypeDef *pdev, uint8_
 	return HAL_PCD_EP_SetStall((PCD_HandleTypeDef*)pdev->pData, ep_addr) == HAL_OK ? USBD_OK : USBD_FAIL;
 }
 
-extern "C" USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *pdev, uint8_t ep_addr,uint8_t *pbuf, uint16_t size){
+extern "C" USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *pdev, uint8_t ep_addr, uint8_t *pbuf, uint32_t size){
 	return halToUsbdStatus(HAL_PCD_EP_Receive((PCD_HandleTypeDef*)pdev->pData, ep_addr, pbuf, size));
 }
 
@@ -129,7 +123,7 @@ extern "C" USBD_StatusTypeDef USBD_LL_SetUSBAddress (USBD_HandleTypeDef *pdev, u
 	return halToUsbdStatus(HAL_PCD_SetAddress((PCD_HandleTypeDef*)pdev->pData, dev_addr));
 }
 
-extern "C" USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev, uint8_t ep_addr,uint8_t *pbuf, uint16_t size){
+extern "C" USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev, uint8_t ep_addr, uint8_t *pbuf, uint32_t size){
 	return halToUsbdStatus(HAL_PCD_EP_Transmit((PCD_HandleTypeDef*)pdev->pData, ep_addr, pbuf, size));
 }
 
@@ -179,6 +173,3 @@ extern "C" USBD_StatusTypeDef USBD_LL_Init (USBD_HandleTypeDef* pdev){
 extern "C"  USBD_StatusTypeDef  USBD_LL_DeInit (USBD_HandleTypeDef *pdev){
 	return HAL_PCD_DeInit((PCD_HandleTypeDef*)pdev->pData) == HAL_OK ? USBD_OK : USBD_FAIL;
 }
-
-#endif
-#endif

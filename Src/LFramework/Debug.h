@@ -34,12 +34,12 @@ namespace LFramework::Debug {
 		}
 		template<typename T>
 		LogWriter& operator << (const T& value) {
-			Terminal::out << value;
+			//Terminal::out << value;
 			return *this;
 		}
 
 		~LogWriter() {
-			Terminal::out << Terminal::NewLine;
+			//Terminal::out << Terminal::NewLine;
 		}
 	};
 

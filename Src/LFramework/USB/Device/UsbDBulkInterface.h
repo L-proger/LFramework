@@ -1,9 +1,5 @@
 #pragma once
 
-#include <LFrameworkConfig.h>
-
-#ifdef LF_USB_DEVICE
-
 #include "UsbDInterface.h"
 #include <optional>
 
@@ -61,5 +57,3 @@ private:
 };
 
 }
-
-#endif
