@@ -5,16 +5,17 @@
 #include <winusb.h>
 #include <memory>
 #include <vector>
-#include "UsbHEndpoint.h"
+#include "UsbHostEndpoint.h"
 #include "UsbHInterface.h"
+#include <LFramework/USB/Host/IUsbDevice.h>
 
 namespace LFramework::USB {
 
-class UsbHDevice {
+class UsbHDevice : public IUsbDevice {
 public:
 
     UsbHDevice(const std::string& deviceFilePath);
-    std::shared_ptr<UsbHInterface> getInterface(size_t id) {
+    std::shared_ptr<IUsbInterface> getInterface(size_t id) {
         if(id >= _interfaces.size()){
             return nullptr;
         }

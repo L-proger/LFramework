@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace LFramework::USB {
+
 struct UsbHostDeviceInfo {
     uint16_t vid;
     uint16_t pid;
@@ -16,3 +18,5 @@ public:
     static UsbHostDeviceInfo getUsbDeviceInfo(const std::string& path);
     static std::vector<UsbHostDeviceInfo> enumerateDevices();
 };
+
+}

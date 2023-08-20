@@ -1,12 +1,10 @@
 #include <LFrameworkConfig.h>
 
-#ifdef LF_USB_HOST
-
 #ifdef _WIN32
 
 #include "UsbHDevice.h"
 #include "../UsbException.h"
-#include "../USBTypes.h"
+//#include "../USBTypes.h"
 
 namespace LFramework::USB {
 
@@ -26,8 +24,12 @@ UsbHDevice::UsbHDevice(const std::string& deviceFilePath){
     enumerateInterfaces();
 }
 
+
+IUsbDevice* openUsbDevice(const std::string& path){
+    return new UsbHDevice(path);
+}
+
 }
 
 #endif
 
-#endif

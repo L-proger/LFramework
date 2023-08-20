@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../UsbEndpoint.h"
+#include "../IUsbHostEndpoint.h"
 #include <Windows.h>
 #include "UsbHException.h"
 #include <winusb.h>
@@ -45,13 +45,13 @@ private:
     std::unique_ptr<OVERLAPPED> _overlapped;
 };
 
-class UsbHEndpoint : public UsbEndpoint {
+class UsbHostEndpoint : public IUsbHostEndpoint {
 public:
-    UsbHEndpoint(const USB::EndpointDescriptor& descriptor, HANDLE deviceHandle, WINUSB_INTERFACE_HANDLE interfaceHandle):UsbEndpoint(descriptor), _interfaceHandle(interfaceHandle),_deviceHandle(deviceHandle){
+    UsbHostEndpoint(const USB::EndpointDescriptor& descriptor, HANDLE deviceHandle, WINUSB_INTERFACE_HANDLE interfaceHandle):IUsbHostEndpoint(descriptor), _interfaceHandle(interfaceHandle),_deviceHandle(deviceHandle){
 
     }
 
-    std::shared_ptr<WinUsbFuture> transferAsync(void* buffer, size_t size){
+    std::shared_ptr<IUsbTransfer> transferAsync(void* buffer, size_t size){
         if(getDescriptor().bEndpointAddress.isIn()){
             return readAsync(buffer, size);
         }else{

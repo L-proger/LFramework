@@ -8,12 +8,14 @@
 #include <Windows.h>
 #include <future>
 #include <LFramework/Threading/Semaphore.h>
+#include <LFramework/USB/Host/IUsbService.h>
 
+namespace LFramework::USB {
 
 class UsbService : public IUsbService {
 public:
-    UsbHostDeviceInfo getUsbDeviceInfo(const std::string& path);
-    std::vector<UsbHostDeviceInfo> enumerateDevices();
+    UsbDeviceInfo getUsbDeviceInfo(const std::string& path);
+    std::vector<UsbDeviceInfo> enumerateDevices();
     bool startEventsListening(std::function<void()> deviceChangeCallback);
     void stopEventsListening();
 private:
@@ -23,3 +25,5 @@ private:
     std::promise<bool> _initPromise;
     std::function<void()> _deviceChangeCallback;
 };
+
+}

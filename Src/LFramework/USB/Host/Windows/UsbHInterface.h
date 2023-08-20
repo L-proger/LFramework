@@ -1,16 +1,16 @@
 #pragma once
 
-#include "../UsbInterface.h"
+#include "../IUsbInterface.h"
 #include <memory>
 #include <vector>
 #include <winusb.h>
 #include <Windows.h>
 #include "../UsbException.h"
-#include "UsbHEndpoint.h"
+#include "UsbHostEndpoint.h"
 
 namespace LFramework::USB {
 
-class UsbHInterface : public UsbInterface {
+class UsbHInterface : public IUsbInterface {
 public:
     UsbHInterface(const USB::InterfaceDescriptor& descriptor, HANDLE device, WINUSB_INTERFACE_HANDLE handle):_descriptor(descriptor), _handle(handle){
 
@@ -28,24 +28,24 @@ public:
             endpointDescriptor.bmAttributes.setType(static_cast<EndpointType>(pipe.PipeType));
 
             if(endpointDescriptor.bEndpointAddress.isIn()){
-                _inEndpoints.push_back(std::make_shared<UsbHEndpoint>(endpointDescriptor, device, handle));
+                _inEndpoints.push_back(std::make_shared<UsbHostEndpoint>(endpointDescriptor, device, handle));
             }else{
-                _outEndpoints.push_back(std::make_shared<UsbHEndpoint>(endpointDescriptor, device, handle));
+                _outEndpoints.push_back(std::make_shared<UsbHostEndpoint>(endpointDescriptor, device, handle));
             }
         }
     }
 
-    UsbHEndpoint* getEndpoint(bool isInEndpoint, uint8_t id) override {
-        return const_cast<UsbHEndpoint*>(getEndpointImpl(isInEndpoint, id));
+    UsbHostEndpoint* getEndpoint(bool isInEndpoint, uint8_t id) override {
+        return const_cast<UsbHostEndpoint*>(getEndpointImpl(isInEndpoint, id));
     }
-    const UsbHEndpoint* getEndpoint(bool isInEndpoint, uint8_t id) const override {
+    const UsbHostEndpoint* getEndpoint(bool isInEndpoint, uint8_t id) const override {
         return getEndpointImpl(isInEndpoint, id);
     }
     const USB::InterfaceDescriptor& getInterfaceDescriptor() const override {
         return _descriptor;
     }
 private:
-    const UsbHEndpoint* getEndpointImpl(bool isInEndpoint, uint8_t id) const {
+    const UsbHostEndpoint* getEndpointImpl(bool isInEndpoint, uint8_t id) const {
         auto& endpoints = isInEndpoint ? _inEndpoints : _outEndpoints;
         if(id >= endpoints.size()){
             return nullptr;
@@ -55,8 +55,8 @@ private:
     USB::InterfaceDescriptor _descriptor;
     WINUSB_INTERFACE_HANDLE _handle;
 
-    std::vector<std::shared_ptr<UsbHEndpoint>> _inEndpoints;
-    std::vector<std::shared_ptr<UsbHEndpoint>> _outEndpoints;
+    std::vector<std::shared_ptr<UsbHostEndpoint>> _inEndpoints;
+    std::vector<std::shared_ptr<UsbHostEndpoint>> _outEndpoints;
 };
 
 }

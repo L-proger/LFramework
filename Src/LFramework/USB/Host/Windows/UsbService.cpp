@@ -1,7 +1,4 @@
 #include <LFrameworkConfig.h>
-
-#ifdef LF_USB_HOST
-
 #include "UsbService.h"
 
 #include <initguid.h>
@@ -14,10 +11,13 @@
 
 #include "UsbNotifyWindow.h"
 
+
+namespace LFramework::USB {
+
 static std::thread _eventsPollingThread;
 
-UsbHostDeviceInfo UsbService::getUsbDeviceInfo(const std::string& path){
-    UsbHostDeviceInfo result{};
+UsbDeviceInfo UsbService::getUsbDeviceInfo(const std::string& path){
+    UsbDeviceInfo result{};
     std::smatch match;
     std::regex vidPidRegex(".*vid_([0-9A-Fa-f]{4})&pid_([0-9A-Fa-f]{4}).*");
     std::regex serialNumberRegex(".*#([^#]*)#.*");
@@ -32,8 +32,8 @@ UsbHostDeviceInfo UsbService::getUsbDeviceInfo(const std::string& path){
     return result;
 }
 
-std::vector<UsbHostDeviceInfo> UsbService::enumerateDevices(){
-    std::vector<UsbHostDeviceInfo> result;
+std::vector<UsbDeviceInfo> UsbService::enumerateDevices(){
+    std::vector<UsbDeviceInfo> result;
     GUID usbClassGUID = GUID_DEVINTERFACE_USB_DEVICE;
 
     //Get device list
@@ -134,4 +134,10 @@ void UsbService::stopEventsListening(){
     _deviceChangeCallback = nullptr;
 }
 
-#endif
+
+IUsbService* createUsbService(){
+    return new UsbService();
+}
+
+
+}

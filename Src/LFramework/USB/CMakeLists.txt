@@ -18,7 +18,7 @@ INTERFACE
 )
 
 add_subdirectory(Device)
-#add_subdirectory(Host)
+add_subdirectory(Host)
 
 
 target_include_directories(LFrameworkUsb

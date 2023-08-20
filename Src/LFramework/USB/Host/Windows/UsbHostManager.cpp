@@ -1,6 +1,5 @@
 #include <LFrameworkConfig.h>
 
-#ifdef LF_USB_HOST
 
 
 #include "UsbHostManager.h"
@@ -11,6 +10,8 @@
 #include <SetupAPI.h>
 #include <stdexcept>
 #include <regex>
+
+namespace LFramework::USB {
 
 UsbHostDeviceInfo UsbHostManager::getUsbDeviceInfo(const std::string& path){
     UsbHostDeviceInfo result{};
@@ -76,4 +77,4 @@ std::vector<UsbHostDeviceInfo> UsbHostManager::enumerateDevices(){
     return result;
 }
 
-#endif
+}

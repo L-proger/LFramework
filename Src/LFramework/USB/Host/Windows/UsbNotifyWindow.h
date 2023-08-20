@@ -7,6 +7,8 @@
 #include <Dbt.h>
 #include <functional>
 
+namespace LFramework::USB {
+
 class UsbNotifyWindow {
 public:
     UsbNotifyWindow(std::function<void()> deviceChangeCallback) : _callback(deviceChangeCallback) {
@@ -80,3 +82,5 @@ private:
         return result;
     }
 };
+
+}

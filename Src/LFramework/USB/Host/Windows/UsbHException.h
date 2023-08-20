@@ -4,6 +4,8 @@
 #include <string>
 #include <Windows.h>
 
+namespace LFramework::USB {
+
 class UsbHException : public std::exception{
 public:
     UsbHException(const std::string& message):_message(message){
@@ -36,3 +38,6 @@ public:
         return "[" + std::to_string(errorCode) + "] " + message;
     }
 };
+
+
+}
