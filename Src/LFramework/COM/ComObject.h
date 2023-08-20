@@ -333,11 +333,11 @@ public:
     }
 
     template<class U, class = std::enable_if_t<std::is_base_of_v<InterfaceAbi<TInterface>, InterfaceAbi<U>>>>
-    ComPtr(ComPtr<U> ptr) : _interface(ptr._interface) {
+    ComPtr(ComPtr<U> ptr) : _interface(ptr.get()) {
         _interface->addRef();
     }
 
-    ComPtr(const ComPtr& ptr) : _interface(ptr._interface) {
+    ComPtr(const ComPtr& ptr) : _interface(ptr.get()) {
         if(_interface != nullptr){
             _interface->addRef();
         }
