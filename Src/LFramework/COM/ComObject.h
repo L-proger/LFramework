@@ -180,6 +180,14 @@ public:
     ~InterfaceAbi() = delete;
 };
 
+
+
+template<typename TInterface>
+static constexpr InterfaceID getInterfaceId() {
+    return InterfaceAbi<TInterface>::ID();
+}
+
+
 template<class TImplementer>
 struct InterfaceRemap<IUnknown, TImplementer> {
     virtual Result LFRAMEWORK_COM_CALL queryInterface(const InterfaceID& riid, void** ppvObject) { return _implementer->queryInterface(riid, ppvObject); }
