@@ -1,4 +1,7 @@
-target_sources(${PROJECT_NAME} 
+add_library(LFrameworkThreading INTERFACE )
+add_library(LFramework::Threading ALIAS LFrameworkThreading )
+
+target_sources(LFrameworkThreading
 INTERFACE
 	CriticalSection.h
 	CriticalSectionFreeRTOS.h
@@ -16,5 +19,3 @@ INTERFACE
 	Thread.cpp
 	ThreadTest.cpp
 )
-
-

@@ -1,14 +1,4 @@
-/*
- * Thread.cpp
- *
- *  Created on: 19 July. 2017 ã.
- *      Author: l-pro
- */
-
 #include <LFramework/Threading/Thread.h>
-
-#if defined(LF_THREADING)
-
 #include <LFramework/Threading/ThreadFreeRTOS.h>
 #include <LFramework/Threading/ThreadStd.h>
 
@@ -85,5 +75,3 @@ namespace LFramework::Threading {
 	}
 
 } //LFramework
-
-#endif //LF_THREADING

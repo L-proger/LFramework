@@ -1,9 +1,6 @@
-#ifndef ThreadStd_h__
-#define ThreadStd_h__
+#pragma once
 
-#include "LFrameworkConfig.h"
-
-#if defined(LF_THREADING) && defined(LF_THREAD_STD)
+#if defined(LF_THREAD_STD)
 
 #include <LFramework/Threading/Thread.h>
 #include <thread>
@@ -61,4 +58,3 @@ namespace LFramework::Threading {
 
 #endif
 
-#endif // ThreadStd_h__

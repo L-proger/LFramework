@@ -1,8 +1,5 @@
 #pragma once
 
-
-#ifdef LF_THREADING
-
 #include <cstddef>
 #include <cassert>
 #include <functional>
@@ -67,6 +64,3 @@ namespace ThisThread {
 }
 
 }
-
-#endif //LF_THREADING
-

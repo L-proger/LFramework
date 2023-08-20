@@ -23,10 +23,11 @@ INTERFACE
 
 add_subdirectory(USB)
 add_subdirectory(UnitTest)
-
+add_subdirectory(Threading)
+add_subdirectory(IO)
 
 #add_subdirectory(Time)
-#add_subdirectory(Threading)
+
 #add_subdirectory(MCU)
 #add_subdirectory(Macro)
 #add_subdirectory(IO)

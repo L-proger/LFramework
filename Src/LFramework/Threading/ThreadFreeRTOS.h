@@ -1,5 +1,4 @@
 #pragma once
-
 #include <LFramework/Threading/Thread.h>
 #include "../Detect/DetectOS.h"
 
