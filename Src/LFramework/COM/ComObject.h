@@ -587,6 +587,13 @@ public:
         reinterpret_cast<InterfaceAbi<IUnknown>*>(_abi)->queryInterface(InterfaceAbi<TInterface>::ID(), reinterpret_cast<void**>(&result));
         return result;
     }
+
+    uint32_t addRef() {
+        return reinterpret_cast<InterfaceAbi<IUnknown>*>(_abi)->addRef();
+    }
+    uint32_t release() {
+        return reinterpret_cast<InterfaceAbi<IUnknown>*>(_abi)->release();
+    }
 protected:
     void* _abi = nullptr;
 };
