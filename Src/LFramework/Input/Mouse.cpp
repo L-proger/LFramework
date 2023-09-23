@@ -3,7 +3,6 @@
 
 #include "Mouse.h"
 
-#ifdef LF_INPUT
 #include <iostream>
 
 
@@ -79,4 +78,3 @@ void Mouse::ApplyInput(RAWINPUT input) {
 }
 #endif
 
-#endif

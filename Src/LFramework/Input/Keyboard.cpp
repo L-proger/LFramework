@@ -3,8 +3,6 @@
 #include "Keyboard.h"
 #include <iostream>
 
-#ifdef LF_INPUT
-
 Keyboard::Keyboard(HANDLE hdevice) :_hdevice(hdevice) {
 	UINT dataSize;
 	GetRawInputDeviceInfo(hdevice, RIDI_DEVICENAME, nullptr, &dataSize);
@@ -52,6 +50,4 @@ void Keyboard::ApplyInput(RAWINPUT input) {
 	else
 		_keys_manager._key_states[input.data.keyboard.VKey] = true;
 }
-#endif
-
 #endif

@@ -6,8 +6,6 @@
 #include <string>
 #include <algorithm>
 
-#ifdef LF_INPUT
-
 Input::Input() {
 	auto hInst = GetModuleHandle(NULL);
 	register_input_window_class(hInst);
@@ -148,7 +146,5 @@ LRESULT CALLBACK Input::wnd_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	}
 	return 0;
 }
-
-#endif
 
 #endif

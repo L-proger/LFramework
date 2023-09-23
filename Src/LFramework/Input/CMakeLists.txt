@@ -1,4 +1,7 @@
-target_sources(${PROJECT_NAME} 
+add_library(LFrameworkInput INTERFACE )
+add_library(LFramework::Input ALIAS LFrameworkInput )
+
+target_sources(LFrameworkInput
 INTERFACE
 	Input.h
 	Keyboard.h
