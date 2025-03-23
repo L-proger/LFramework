@@ -2,8 +2,14 @@
 
 #ifdef LF_TERMINAL_STREAM_USART_STM32
 
+
+#ifdef STM32F7
 #include <stm32f7xx_hal.h>
 #include <stm32f7xx_ll_usart.h>
+#elif STM32H7
+#include <stm32h7xx_hal.h>
+#include <stm32h7xx_ll_usart.h>
+#endif
 
 namespace LFramework::Terminal {
 
