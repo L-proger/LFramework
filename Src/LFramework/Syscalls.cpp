@@ -12,7 +12,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "../Debug.h"
+#include "Debug.h"
 #include "System.h"
 #include <malloc.h>
 #endif//Todo check right files for different configuration

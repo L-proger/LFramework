@@ -1,6 +1,5 @@
 #pragma once
 
-#include <LFrameworkConfig.h>
 #include <cstdint>
 #include <cstddef>
 

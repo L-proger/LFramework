@@ -1,7 +1,6 @@
 #ifndef System_h__
 #define System_h__
 
-#include "LFrameworkConfig.h"
 #include <cstddef>
 
 #include "Detect/DetectOS.h"
